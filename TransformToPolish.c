@@ -2,38 +2,96 @@
 #include "Stack.h"
 #include <string.h>
 #include <math.h>
+#include <ctype.h>
 
-RPNNode* create_RPNNode(int type) {
-	RPNNode* newNode = (RPNNode*)malloc(sizeof(RPNNode));
-	if (type == REAL_NUMBER) {
-
+int get_func_type(char *source, int *i) {
+	if (source[*i] == 's') {
+		if (source[++(*i)] == 'i') {
+			++(*i);
+			return SIN;
+		} else {
+			(*i) += 2;
+			return SQRT;
+		}
 	}
-	else if (IS_OPERATOR(type)) {
-		newNode->type = OPERATOR;
-		newNode->operator = type;
+	else if (source[*i] == 'c') {
+		if (source[++(*i)] == 'o') {
+			++(*i);
+			return COS;
+		} else {
+			++(*i);
+			return CTG;
+		}
+	}
+	else if (source[*i] == 't') {
+		++(*i);
+		return TG;
+	}
+	else if (source[*i] == 'l') {
+		if (source[++(*i)] == 'o') {
+			(*i) += 1;
+			return LOG;
+		} else {
+			return LN;
+		}
+	}
+	else if (source[*i] == 'p') {
+		if (source[++(*i)] == 'o') {
+			(*i) += 1;
+			return POW;
+		} else {
+			(*i) += 3;
+			return PHASE;
+		}
+	}
+	else if (source[*i] == 'a') {
+		(*i) += 2;
+		return ABS;
+	}
+	else if (source[*i] == 'e') {
+		(*i) += 2;
+		return EXP;
+	}
+	else if (source[*i] == 'r') {
+		(*i) += 3;
+		return REAL;
+	}
+	else if (source[*i] == 'i') {
+		(*i) += 3;
+		return IMAG;
+	}
+	else if (source[*i] == 'm') {
+		(*i) += 2;
+		return MAG;
 	}
 }
 
+
 RPNNode get_number(int* i, char* source) {
-	double result = 0;
-	int dot = 0, exp = 1;
-	for (; (source[*i] >= '0' && source[*i] <= '9' || source[*i] == '.' || source[*i] == ',') && *i < strlen(source); ++(*i)) {
+	long double result = 0;
+	int dot = 0, exp = 1, len = strlen(source);
+	for (; (source[*i] >= '0' && source[*i] <= '9' || source[*i] == '.' || source[*i] == ',') && *i < len; ++(*i)) {
 		if (source[*i] == '.' || source[*i] == ',') {
 			dot = 1;
 			continue;
 		}
 		if (dot == 0) {
 			result = result * 10 + source[*i] - '0';
-		}
-		else {
+		} else {
 			result += (source[*i] - '0') / pow(10, exp);
 			++exp;
 		}
 	}
-	--(*i);
 	RPNNode tmp;
-	tmp.type = REAL_NUMBER;
-	tmp.real_number = result;
+	if (source[*i] == 'j') {
+		tmp.type = COMPLEX_NUMBER;
+		tmp.complex_number._Val[0] = 0;
+		tmp.complex_number._Val[1] = result;
+	} else {
+		tmp.type = REAL_NUMBER;
+		tmp.real_number = result;
+		--(*i);
+	}
 	return tmp;
 }
 
@@ -42,7 +100,7 @@ int priority(int op1, int op2) {
 	if ((op1 == '+' || op1 == '-') && (op2 == '+' || op2 == '-')) {
 		return 1;
 	}
-	if ((op1 == '*' || op2 == '/') && (op2 == '*' || op2 == '/' || op2 == '+' || op2 == '-')) {
+	if ((op1 == '*' || op1 == '/') && (op2 == '*' || op2 == '/' || op2 == '+' || op2 == '-')) {
 		return 1;
 	}
 	if (op1 == '^' && (op2 == '^' || op2 == '*' || op2 == '/' || op2 == '+' || op2 == '-')) {
@@ -55,74 +113,67 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 	Stack operators;
 	init_Stack(&operators);
 
-	//printf("Expression:\n%source\n", source);
+	printf("Expression:\n%s\n", source);
 	int len = strlen(source);
 
 	for (int i = 0; i < len; ++i) {
 
 		if (source[i] == ' ') continue;
 
-		if (source[i] == '(') {
-			//operation[++CurOperation] = source[i];
-			//operators.push()
+		else if (source[i] == '(') {
 			RPNNode newNode;
-			newNode.operator = source[i];
-			newNode.type = OPERATOR;
-			operators.push(&operators, &newNode);
+			newNode.type = -1;
+			newNode.function = '(';
+			operators.push(&operators, newNode);
 		}
 
-		if (source[i] == ')') {
-			/*while (operation[CurOperation] != '(') {
-				MainStack[++CurMain] = operation[CurOperation--] + SIGN;
+		else if (source[i] == ')') {
+			while (operators.top(operators).function != '(') {
+				mainStack->push(mainStack, operators.pop(&operators));
 			}
-			operation[CurOperation--];*/
-			while (operators.top(operators).operator != '(') {
-				RPNNode* newNode = (RPNNode*)malloc(sizeof(RPNNode));
-				*newNode = operators.pop(&operators);
-				mainStack->push(mainStack, newNode);
+			operators.pop(&operators);
+
+			if (operators.top(operators).type == FUNCTION) {
+				mainStack->push(mainStack, operators.pop(&operators));
 			}
 		}
 
-		if (OPERATOR_HELP(source[i])) {
-			//Обработка унарного минуса
-			if (source[i] == '-' && (i == 0 || source[i - 1] == '(')) {
-				++i;
-				//MainStack[++CurMain] = -GetNumber(&i, source);
-				RPNNode* newNode = (RPNNode*)malloc(sizeof(RPNNode));
-				*newNode = get_number(&i, source);
-				newNode->real_number *= -1;
+		else if (IS_OPERATOR(source[i])) {
+
+			if ( (source[i] == '-') && (i == 0 || source[i - 1] == '(' || source[i + 1] == '(') || isalpha(source[i + 1]) ) {
+				RPNNode help;
+				help.type = REAL_NUMBER;
+				help.real_number = -1;
+				mainStack->push(mainStack, help);
+				help.type = OPERATOR;
+				help.function = '*';
+				operators.push(&operators, help);
 				continue;
 			}
-			//Выгрузка оператора более низкого приоритета из стэка операторов в главный стэк
-			/*if (CurOperation != -1 && priority(operation[CurOperation], source[i])) {
-				MainStack[++CurMain] = operation[CurOperation--] + SIGN;
-			}
-			operation[++CurOperation] = source[i];*/
-			if (!operators.empty(operators) && priority(operators.top(operators).operator, source[i])) {
-				RPNNode* newNode = (RPNNode*)malloc(sizeof(RPNNode));
-				*newNode = operators.pop(&operators);
-				mainStack->push(mainStack, newNode);
+			while (!operators.empty(operators) && operators.top(operators).type == OPERATOR && priority(operators.top(operators).function, source[i])) {
+				mainStack->push(mainStack, operators.pop(&operators));
 			}
 			RPNNode tmp;
-			tmp.operator = source[i];
-			operators.push(&operators, &tmp);
+			tmp.type = OPERATOR;
+			tmp.function = source[i];
+			operators.push(&operators, tmp);
 		}
-		if (source[i] >= '0' && source[i] <= '9') {
-			//MainStack[++CurMain] = GetNumber(&i, source);
-			RPNNode* newNode = (RPNNode*)malloc(sizeof(RPNNode));
-			*newNode = get_number(&i, source);
-			mainStack->push(mainStack, newNode);
+
+		else if (source[i] >= '0' && source[i] <= '9') {
+			mainStack->push(mainStack, get_number(&i, source));
+		}
+
+		else  {
+			RPNNode newNode;
+			newNode.type = FUNCTION;
+			newNode.function = get_func_type(source, &i);
+			operators.push(&operators, newNode);
 		}
 	}
-	/*while (CurOperation != -1) {
-		MainStack[++CurMain] = operation[CurOperation--] + SIGN;
-	}*/
 	while (!operators.empty(operators)) {
-		RPNNode* newNode = (RPNNode*)malloc(sizeof(RPNNode));
-		*newNode = operators.pop(&operators);
-		mainStack->push(mainStack, newNode);
+		mainStack->push(mainStack, operators.pop(&operators));
 	}
-	free(source);
+	//free(source);
 }
 
 int main() {
@@ -130,32 +181,10 @@ int main() {
 	
 	init_Stack(&mainStack);
 
-	RPNNode node1, node2;
-	node1.type = REAL_NUMBER;
-	node2.type = REAL_NUMBER;
-	node1.real_number = 1;
-	node2.real_number = 2;
+	char *s = "(-tg(log(2)+3/2)^2)";
 
-	mainStack.push(&mainStack, &node1);
-	mainStack.push(&mainStack, &node2);
+	Transform_to_Polish(&mainStack, s);
+
 	mainStack.print(mainStack);
-
-	/*printf("%lf\n", mainStack.popHead(&mainStack).real_number);
-	mainStack.print(mainStack);
-
-	printf("%lf\n", mainStack.popHead(&mainStack).real_number);
-	mainStack.print(mainStack);
-
-	printf("%lf\n", mainStack.popHead(&mainStack).real_number);
-	mainStack.print(mainStack);*/
-
-	printf("%lf\n", mainStack.pop(&mainStack).real_number);
-	mainStack.print(mainStack);
-
-	printf("%lf\n", mainStack.pop(&mainStack).real_number);
-	mainStack.print(mainStack);
-
-	printf("%lf\n", mainStack.pop(&mainStack).real_number);
-	mainStack.print(mainStack);
-
+	//printf("%d", mainStack.size);
 }
