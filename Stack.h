@@ -13,7 +13,6 @@ typedef struct RPNNode {
 		_Lcomplex complex_number;
 		long double real_number;
 		int function;
-		int operator;
 	};
 }RPNNode;
 
