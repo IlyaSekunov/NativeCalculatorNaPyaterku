@@ -22,6 +22,11 @@
 #define IMAG 15
 #define MAG 16
 #define PHASE 17
+#define PLUS 18
+#define MINUS 19
+#define MULT 20
+#define DIV 21
+#define DEG 22
 
 #define IS_FUNCTION(x) ((x) >= SIN && (x) <= PHASE)
 

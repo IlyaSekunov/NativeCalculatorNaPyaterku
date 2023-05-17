@@ -5,39 +5,39 @@
 #include "Constants.h"
 #include "Stack.h"
 
-RPNNode* solveRPN(Stack*);
+RPNNode solveRPN(Stack*);
 void calc(Stack*, RPNNode);
 
-RPNNode* sum(RPNNode*, RPNNode*, int func);
-RPNNode* sub(RPNNode*, RPNNode*, int func);
-RPNNode* mult(RPNNode*, RPNNode*, int func);
-RPNNode* div(RPNNode*, RPNNode*, int func);
-RPNNode* deg(RPNNode*, RPNNode*, int func);
+RPNNode sum(RPNNode*, RPNNode*, int func);
+RPNNode sub(RPNNode*, RPNNode*, int func);
+RPNNode mult(RPNNode*, RPNNode*, int func);
+RPNNode div(RPNNode*, RPNNode*, int func);
+RPNNode deg(RPNNode*, RPNNode*, int func);
 
-RPNNode* cos(RPNNode*, int func);
-RPNNode* sin(RPNNode*, int func);
-RPNNode* tg(RPNNode*, int func);
-RPNNode* ctg(RPNNode*, int func);
-RPNNode* log(RPNNode*, int func);
-RPNNode* ln(RPNNode*, int func);
-RPNNode* sqrt(RPNNode*, int func);
-RPNNode* pow(RPNNode*, int func);
-RPNNode* abs(RPNNode*, int func);
-RPNNode* exp(RPNNode*, int func);
-RPNNode* real(RPNNode*, int func);
-RPNNode* imag(RPNNode*, int func);
-RPNNode* mag(RPNNode*, int func);
-RPNNode* phase(RPNNode*, int func);
+RPNNode cos(RPNNode*, int func);
+RPNNode sin(RPNNode*, int func);
+RPNNode tg(RPNNode*, int func);
+RPNNode ctg(RPNNode*, int func);
+RPNNode log(RPNNode*, int func);
+RPNNode ln(RPNNode*, int func);
+RPNNode sqrt(RPNNode*, int func);
+RPNNode pow(RPNNode*, int func);
+RPNNode abs(RPNNode*, int func);
+RPNNode exp(RPNNode*, int func);
+RPNNode real(RPNNode*, int func);
+RPNNode imag(RPNNode*, int func);
+RPNNode mag(RPNNode*, int func);
+RPNNode phase(RPNNode*, int func);
 
 
-RPNNode* solveRPN(Stack* rpn) {
+RPNNode solveRPN(Stack* rpn) {
 	Stack* calcRpn = malloc(sizeof(Stack));
 	init_Stack(calcRpn);
 
 	while(rpn->size) {
 		RPNNode next = rpn->pop(rpn);
 		if (next.type == REAL_NUMBER || next.type == COMPLEX_NUMBER) {
-			calcRpn->push(calcRpn, &next);
+			calcRpn->push(calcRpn, next);
 		}
 		else {
 			calc(calcRpn, next);
@@ -47,7 +47,7 @@ RPNNode* solveRPN(Stack* rpn) {
 
 void calc(Stack* calcRpn, RPNNode func) {
 	RPNNode oper1 = pop_Stack(calcRpn);
-	RPNNode* result;
+	RPNNode result;
 
 	if (func.type == FUNCTION) {
 		switch (func.type) {

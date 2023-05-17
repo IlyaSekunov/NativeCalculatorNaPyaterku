@@ -4,6 +4,8 @@
 #include <math.h>
 #include <ctype.h>
 
+RPNNode solveRPN(Stack* rpn);
+
 int get_func_type(char *source, int *i) {
 	if (source[*i] == 's') {
 		if (source[++(*i)] == 'i') {
@@ -185,6 +187,6 @@ int main() {
 
 	Transform_to_Polish(&mainStack, s);
 
-	mainStack.print(mainStack);
+	solveRPN(&mainStack);
 	//printf("%d", mainStack.size);
 }
