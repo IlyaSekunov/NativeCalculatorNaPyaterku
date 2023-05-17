@@ -2,8 +2,10 @@
 #define stackH
 #include <complex.h>
 #include <stdlib.h>
-#define EMPTY 0
-#define FULL 1
+#include <stdio.h>
+#include "Constants.h"
+#define EMPTY 1
+#define FULL 0
 
 typedef struct RPNNode {
 	int type;
@@ -11,80 +13,119 @@ typedef struct RPNNode {
 		_Lcomplex complex_number;
 		long double real_number;
 		int function;
+		int operator;
 	};
 }RPNNode;
 
 typedef struct stackList {
-	RPNNode* value;
-	struct stackList* link;
+	RPNNode* node;
+	struct stackList* next;
 } stackList;
 
-typedef struct STACK {
-	stackList* stack;
-	void (*push)(struct STACK*, long double);
-	RPNNode (*pop)(struct STACK*);
-	int (*empty)(struct STACK);
+typedef struct Stack {
+	stackList* head;
 	int size;
-	RPNNode (*top)(struct STACK);
-	void (*print)(struct STACK);
-} STACK;
+	void (*push)(struct Stack* stack, RPNNode* node);
+	RPNNode (*pop)(struct Stack* stack);
+	RPNNode(*popHead) (struct Stack* stack);
+	int (*empty)(const struct Stack stack);
+	RPNNode (*top)(struct Stack stack);
+	void (*print)(const struct Stack stack);
+} Stack;
 
-void stackPush(STACK* stack, long double value) {
-	stackList* newList = (stackList*)malloc(sizeof(stackList));
-	if (newList) {
-		newList->value = value;
-		newList->link = stack->stack;
-		if (!stack->stack) {
-			stack->stack = newList;
+void push_Stack(Stack* stack, RPNNode* node) {
+	stackList* newNode = (stackList*)malloc(sizeof(stackList));
+	if (newNode) {
+		newNode->node = node;
+		newNode->next = NULL;
+		if (!stack->head) {
+			stack->head = newNode;
 			++(stack->size);
 			return;
 		}
-		stack->stack = newList;
+		stackList* iter = stack->head;
+		while (iter->next) iter = iter->next;
+		iter->next = newNode;
 		++(stack->size);
 	}
-	return;
 }
 
-long double stackPop(STACK* stack) {
-	if (!stack->stack) return (long double)ERR;
-	stackList* tmp = stack->stack->link;
-	long double value = stack->stack->value;
-	free(stack->stack);
-	stack->stack = tmp;
+RPNNode pop_Stack(Stack* stack) {
+	if (!stack->head) return;
+	RPNNode popped;
+	if (!stack->head->next) {
+		--(stack->size);
+		popped = *stack->head->node;
+		free(stack->head);
+		stack->head = NULL;
+		return popped;
+	}
+	stackList* prev = stack->head;
+	stackList* next = stack->head;
+	while (next->next) {
+		prev = next;
+		next = next->next;
+	}
+	popped = *next->node;
+	prev->next = NULL;
+	free(next);
 	--(stack->size);
-	return value;
+	return popped;
 }
 
-int stackEmpty(STACK stack) {
-	if (stack.stack) return FULL;
-	return EMPTY;
+RPNNode pop_head_Stack(Stack* stack) {
+	if (!stack->head) return;
+	RPNNode popped;
+	if (!stack->head->next) {
+		popped = *stack->head->node;
+		free(stack->head);
+		stack->head = NULL;
+		--(stack->size);
+		return popped;
+	}
+	stackList* head = stack->head;
+	popped = *head->node;
+	stack->head = head->next;
+	free(head);
+	--(stack->size);
+	return popped;
 }
 
-long double stackTop(STACK stack) {
-	if (!stack.stack) return (long double)ERR;
-	return stack.stack->value;
+RPNNode top_Stack(const Stack stack) {
+	if (!stack.head) return;
+	stackList* iter = stack.head;
+	while (iter->next) iter = iter->next;
+	return *iter->node;
 }
 
-void stackPrint(STACK stack) {
-	if (!stack.stack) return;
-	while (stack.stack) {
-		printf("<- %lf ", stack.stack->value);
-		stack.stack = stack.stack->link;
+void print_Stack(const Stack stack) {
+	printf("Stack: ");
+	stackList* iter = stack.head;
+	while (iter) {
+		if (iter->node->type == REAL_NUMBER) {
+			printf("%lf ", iter->node->real_number);
+		}
+		iter = iter->next;
 	}
 	printf("\n");
-	return;
 }
 
-void initSTACK(STACK* stack) {
-	stack->stack = NULL;
-	stack->pop = stackPop;
-	stack->push = stackPush;
-	stack->empty = stackEmpty;
+int empty_Stack(const Stack stack) {
+	return stack.size > 0 ? FULL : EMPTY;
+}
+
+void init_Stack(Stack* stack) {
+	stack->head = NULL;
 	stack->size = 0;
-	stack->top = stackTop;
-	stack->print = stackPrint;
-	return;
+	stack->push = push_Stack;
+	stack->pop = pop_Stack;
+	stack->top = top_Stack;
+	stack->print = print_Stack;
+	stack->empty = empty_Stack;
+	stack->popHead = pop_head_Stack;
 }
 
+#endif
 
-#endif 
+
+
