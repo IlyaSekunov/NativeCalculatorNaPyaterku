@@ -186,7 +186,7 @@ int main() {
 	
 	init_Stack(&mainStack);
 
-	char *s = "(-tg(log(2)+3/2)^2)-(5 + 2j)";
+	char *s = "(-tg(log(2)+3/2)^2)   -      (5 + 2j)";
 	//-1 2 log 3 2 / + tg * 2 ^
 
 	Transform_to_Polish(&mainStack, s);
