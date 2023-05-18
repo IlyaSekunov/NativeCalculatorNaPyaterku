@@ -9,7 +9,6 @@ RPNNode solveRPN(Stack*);
 
 void calc(Stack*, RPNNode);
 
-
 RPNNode sum(RPNNode*, RPNNode*);
 RPNNode sub(RPNNode*, RPNNode*);
 RPNNode mult(RPNNode*, RPNNode*);

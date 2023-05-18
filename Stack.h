@@ -31,7 +31,8 @@ void push_Stack(Stack* stack, RPNNode node);
 RPNNode pop_Stack(Stack* stack);
 RPNNode pop_head_Stack(Stack* stack);
 RPNNode top_Stack(const Stack stack);
-void print_Stack(const Stack stack);
+//void print_Stack(const Stack stack);
+void print(Stack stack);
 int empty_Stack(const Stack stack);
 void init_Stack(Stack* stack);
 
