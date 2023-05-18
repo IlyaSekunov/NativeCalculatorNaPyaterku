@@ -53,7 +53,7 @@ void calc(Stack* calcRpn, RPNNode func) {
 	RPNNode* result = calloc(1, sizeof(RPNNode));
 
 	if (func.type == FUNCTION) {
-		switch (func.type) {
+		switch (func.function) {
 		case SIN:
 			result = sinRpn(&oper2);
 			break;
@@ -122,25 +122,28 @@ void calc(Stack* calcRpn, RPNNode func) {
 RPNNode* sum(RPNNode* oper1, RPNNode* oper2) {
 	if (oper1->type == REAL_NUMBER) {
 		if (oper2->type == REAL_NUMBER) {
-			long double sum = oper1->real_number + oper2->real_number;
-			RPNNode res = { REAL_NUMBER, sum };
+			long double rslt = oper1->real_number + oper2->real_number;
+			RPNNode res = { REAL_NUMBER, rslt};
 			return &res;
 		}
 		else {
-			long double sum = oper1->real_number + cimagl(oper2->complex_number);
-			RPNNode res = { COMPLEX_NUMBER, {0, sum} };
+			long double resReal = oper1->real_number + creall(oper2->complex_number);
+			long double resImag = cimagl(oper2->complex_number);
+			RPNNode res = { COMPLEX_NUMBER, {resReal, resImag} };
 			return &res;
 		}
 	}
 	else {
 		if (oper2->type == REAL_NUMBER) {
-			long double sum = cimagl(oper1->complex_number) + oper2->real_number;
-			RPNNode res = { COMPLEX_NUMBER, {0, sum} };
+			long double resReal = creall(oper1->complex_number) + oper2->real_number;
+			long double resImag = cimagl(oper1->complex_number);
+			RPNNode res = { COMPLEX_NUMBER, {resReal, resImag} };
 			return &res;
 		}
 		else {
-			long double sum = cimagl(oper1->complex_number) + cimagl(oper2->complex_number);
-			RPNNode res = { COMPLEX_NUMBER, {0, sum} };
+			long double resReal = creall(oper1->complex_number) + creall(oper2->complex_number);
+			long double resImag = cimagl(oper1->complex_number) + cimagl(oper2->complex_number);
+			RPNNode res = { COMPLEX_NUMBER, {resReal, resImag} };
 			return &res;
 		}
 	}
@@ -149,25 +152,28 @@ RPNNode* sum(RPNNode* oper1, RPNNode* oper2) {
 RPNNode* sub(RPNNode* oper1, RPNNode* oper2) {
 	if (oper1->type == REAL_NUMBER) {
 		if (oper2->type == REAL_NUMBER) {
-			long double sub = oper1->real_number - oper2->real_number;
-			RPNNode res = { REAL_NUMBER, sub };
+			long double rslt = oper1->real_number - oper2->real_number;
+			RPNNode res = { REAL_NUMBER, rslt };
 			return &res;
 		}
 		else {
-			long double sub = oper1->real_number - cimagl(oper2->complex_number);
-			RPNNode res = { COMPLEX_NUMBER, {0, sub} };
+			long double resReal = oper1->real_number - creall(oper2->complex_number);
+			long double resImag = cimagl(oper2->complex_number);
+			RPNNode res = { COMPLEX_NUMBER, {resReal, resImag} };
 			return &res;
 		}
 	}
 	else {
 		if (oper2->type == REAL_NUMBER) {
-			long double sub = cimagl(oper1->complex_number) - oper2->real_number;
-			RPNNode res = { COMPLEX_NUMBER, {0, sub} };
+			long double resReal = creall(oper1->complex_number) - oper2->real_number;
+			long double resImag = cimagl(oper1->complex_number);
+			RPNNode res = { COMPLEX_NUMBER, {resReal, resImag} };
 			return &res;
 		}
 		else {
-			long double sub = cimagl(oper1->complex_number) - cimagl(oper2->complex_number);
-			RPNNode res = { COMPLEX_NUMBER, {0, sub} };
+			long double resReal = creall(oper1->complex_number) - creall(oper2->complex_number);
+			long double resImag = cimagl(oper1->complex_number) - cimagl(oper2->complex_number);
+			RPNNode res = { COMPLEX_NUMBER, {resReal, resImag} };
 			return &res;
 		}
 	}
@@ -176,25 +182,25 @@ RPNNode* sub(RPNNode* oper1, RPNNode* oper2) {
 RPNNode* mult(RPNNode* oper1, RPNNode* oper2) {
 	if (oper1->type == REAL_NUMBER) {
 		if (oper2->type == REAL_NUMBER) {
-			long double mult = oper1->real_number * oper2->real_number;
-			RPNNode res = { REAL_NUMBER, mult };
+			long double rslt = oper1->real_number * oper2->real_number;
+			RPNNode res = { REAL_NUMBER, rslt};
 			return &res;
 		}
 		else {
-			long double mult = oper1->real_number * cimagl(oper2->complex_number);
-			RPNNode res = { COMPLEX_NUMBER, {0, mult} };
+			_Lcomplex rslt = _LCmulcr(oper2->complex_number, oper1->real_number);
+			RPNNode res = { COMPLEX_NUMBER, rslt};
 			return &res;
 		}
 	}
 	else {
 		if (oper2->type == REAL_NUMBER) {
-			long double mult = cimagl(oper1->complex_number) * oper2->real_number;
-			RPNNode res = { COMPLEX_NUMBER, {0, mult} };
+			_Lcomplex rslt = _LCmulcr(oper1->complex_number, oper2->real_number);
+			RPNNode res = { COMPLEX_NUMBER, rslt};
 			return &res;
 		}
 		else {
-			long double mult = cimagl(oper1->complex_number) * cimagl(oper2->complex_number);
-			RPNNode res = { COMPLEX_NUMBER, -mult };
+			_Lcomplex rslt = _LCmulcc(oper1->complex_number, oper2->complex_number);
+			RPNNode res = { COMPLEX_NUMBER, rslt};
 			return &res;
 		}
 	}
@@ -208,20 +214,23 @@ RPNNode* divRpn(RPNNode* oper1, RPNNode* oper2) {
 			return &res;
 		}
 		else {
-			long double div = oper1->real_number / cimagl(oper2->complex_number);
-			RPNNode res = { COMPLEX_NUMBER, {0, -div} };
+			long double resReal = oper1->real_number / cabsl(oper2->complex_number);
+			long double resImag = (oper1->real_number * cimagl(oper2->complex_number)) / cabsl(oper2->complex_number);
+			RPNNode res = { COMPLEX_NUMBER, {resReal, -resImag} };
 			return &res;
 		}
 	}
 	else {
 		if (oper2->type == REAL_NUMBER) {
-			long double div = cimagl(oper1->complex_number) / oper2->real_number;
-			RPNNode res = { COMPLEX_NUMBER, {0, div} };
+			long double resReal = creall(oper1->complex_number) / oper2->real_number;
+			long double resImag = cimagl(oper1->complex_number) / oper2->real_number;
+			RPNNode res = { COMPLEX_NUMBER, {resReal, resImag} };
 			return &res;
 		}
 		else {
-			long double div = cimagl(oper1->complex_number) / cimagl(oper2->complex_number);
-			RPNNode res = { COMPLEX_NUMBER, div };
+			long double resReal = (creall(oper1->complex_number) * creall(oper2->complex_number) + cimagl(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number)*creall(oper2->complex_number) + cimagl(oper2->complex_number)*cimagl(oper2->complex_number));
+			long double resImag = (cimagl(oper1->complex_number) * creall(oper2->complex_number) - creall(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number) * creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
+			RPNNode res = { COMPLEX_NUMBER, {resReal, -resImag}};
 			return &res;
 		}
 	}
@@ -263,8 +272,8 @@ RPNNode* cosRpn(RPNNode* oper) {
 		return &res;
 	}
 	else {
-		long double rslt = creall(ccosl(oper->complex_number));
-		RPNNode res = { REAL_NUMBER, rslt };
+		_Lcomplex rslt = ccosl(oper->complex_number);
+		RPNNode res = { COMPLEX_NUMBER, rslt };
 		return &res;
 	}
 }
@@ -276,8 +285,8 @@ RPNNode* sinRpn(RPNNode* oper) {
 		return &res;
 	}
 	else {
-		long double rslt = creall(csinl(oper->complex_number));
-		RPNNode res = { REAL_NUMBER, rslt };
+		_Lcomplex rslt = csinl(oper->complex_number);
+		RPNNode res = { COMPLEX_NUMBER, rslt };
 		return &res;
 	}
 
@@ -290,8 +299,8 @@ RPNNode* tgRpn(RPNNode* oper) {
 		return &res;
 	}
 	else {
-		long double rslt = creall(ctanl(oper->complex_number));
-		RPNNode res = { REAL_NUMBER, rslt };
+		_Lcomplex rslt = ctanl(oper->complex_number);
+		RPNNode res = { COMPLEX_NUMBER, rslt };
 		return &res;
 	}
 
@@ -304,22 +313,22 @@ RPNNode* ctgRpn(RPNNode* oper) {
 		return &res;
 	}
 	else {
-		long double rslt = 1 / creall(ctanl(oper->complex_number));
-		RPNNode res = { REAL_NUMBER, rslt };
-		return &res;
+		RPNNode del = { REAL_NUMBER, 1.0 };
+		RPNNode tanRes = { COMPLEX_NUMBER, ctanl(oper->complex_number) };
+		RPNNode* res = divRpn(&del, &tanRes);
+		return res;
 	}
-
 }
 
 RPNNode* logRpn(RPNNode* oper) {
 	if (oper->type == REAL_NUMBER) {
-		long double rslt = log(oper->real_number);
+		long double rslt = log10(oper->real_number);
 		RPNNode res = { REAL_NUMBER, rslt };
 		return &res;
 	}
 	else {
-		long double rslt = creall(clogl(oper->complex_number));
-		RPNNode res = { REAL_NUMBER, rslt };
+		_Lcomplex rslt = clog10l(oper->complex_number);
+		RPNNode res = { COMPLEX_NUMBER, rslt };
 		return &res;
 	}
 
@@ -327,13 +336,13 @@ RPNNode* logRpn(RPNNode* oper) {
 
 RPNNode* lnRpn(RPNNode* oper) {
 	if (oper->type == REAL_NUMBER) {
-		long double rslt = log10(oper->real_number);
+		long double rslt = log(oper->real_number);
 		RPNNode res = { REAL_NUMBER, rslt };
 		return &res;
 	}
 	else {
-		long double rslt = creall(clog10l(oper->complex_number));
-		RPNNode res = { REAL_NUMBER, rslt };
+		_Lcomplex rslt = clogl(oper->complex_number);
+		RPNNode res = { COMPLEX_NUMBER, rslt };
 		return &res;
 	}
 
@@ -346,8 +355,8 @@ RPNNode* sqrtRpn(RPNNode* oper) {
 		return &res;
 	}
 	else {
-		long double rslt = creall(csqrtl(oper->complex_number));
-		RPNNode res = { REAL_NUMBER, rslt };
+		_Lcomplex rslt = csqrtl(oper->complex_number);
+		RPNNode res = { COMPLEX_NUMBER, rslt };
 		return &res;
 	}
 
@@ -361,7 +370,7 @@ RPNNode* absRpn(RPNNode* oper) {
 	}
 	else {
 		long double rslt = cabsl(oper->complex_number);
-		RPNNode res = { REAL_NUMBER, rslt };
+		RPNNode res = { COMPLEX_NUMBER, rslt };
 		return &res;
 	}
 
@@ -374,8 +383,8 @@ RPNNode* expRpn(RPNNode* oper) {
 		return &res;
 	}
 	else {
-		long double rslt = creall(cexpl(oper->complex_number));
-		RPNNode res = { REAL_NUMBER, rslt };
+		_Lcomplex rslt = cexpl(oper->complex_number);
+		RPNNode res = { COMPLEX_NUMBER, rslt};
 		return &res;
 	}
 

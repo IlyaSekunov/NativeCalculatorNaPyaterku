@@ -186,17 +186,19 @@ int main() {
 	
 	init_Stack(&mainStack);
 
-	char *s = "(-tg(log(2)+3/2)^2)";
+	char *s = "(-tg(log(2)+3/2)^2)-(5 + 2j)";
+	//-1 2 log 3 2 / + tg * 2 ^
 
 	Transform_to_Polish(&mainStack, s);
 
 	RPNNode res = solveRPN(&mainStack);
 
+	printf("Result:\n");
 	if (res.type == REAL_NUMBER) {
 		printf("%f", res.real_number);
 	}
 	else {
-		printf("%f", cimagl(res.complex_number));
+		printf("%f + (%f)j", creall(res.complex_number), cimagl(res.complex_number));
 	}
 	//printf("%d", mainStack.size);
 }
