@@ -1,4 +1,4 @@
-#define _CRT_SECURE_NO_WARNINGS
+п»ї#define _CRT_SECURE_NO_WARNINGS
 #include "Stack.h"
 #include <complex.h>
 #include <string.h>
@@ -9,12 +9,13 @@
 
 RPNNode solveRPN(Stack* rpn);
 
-int get_func_type(char *source, int *i) {
+int get_func_type(char* source, int* i) {
 	if (source[*i] == 's') {
 		if (source[++(*i)] == 'i') {
 			++(*i);
 			return SIN;
-		} else {
+		}
+		else {
 			(*i) += 2;
 			return SQRT;
 		}
@@ -23,7 +24,8 @@ int get_func_type(char *source, int *i) {
 		if (source[++(*i)] == 'o') {
 			++(*i);
 			return COS;
-		} else {
+		}
+		else {
 			++(*i);
 			return CTG;
 		}
@@ -34,17 +36,19 @@ int get_func_type(char *source, int *i) {
 	}
 	else if (source[*i] == 'l') {
 		if (source[++(*i)] == 'o') {
-			(*i) += 1;
+			++(*i);
 			return LOG;
-		} else {
+		}
+		else {
 			return LN;
 		}
 	}
 	else if (source[*i] == 'p') {
 		if (source[++(*i)] == 'o') {
-			(*i) += 1;
+			++(*i);
 			return POW;
-		} else {
+		}
+		else {
 			(*i) += 3;
 			return PHASE;
 		}
@@ -82,7 +86,8 @@ RPNNode get_number(int* i, char* source) {
 		}
 		if (dot == 0) {
 			result = result * 10 + source[*i] - '0';
-		} else {
+		}
+		else {
 			result += (source[*i] - '0') / pow(10, exp);
 			++exp;
 		}
@@ -92,7 +97,8 @@ RPNNode get_number(int* i, char* source) {
 		tmp.type = COMPLEX_NUMBER;
 		tmp.complex_number._Val[0] = 0;
 		tmp.complex_number._Val[1] = result;
-	} else {
+	}
+	else {
 		tmp.type = REAL_NUMBER;
 		tmp.real_number = result;
 		--(*i);
@@ -100,7 +106,7 @@ RPNNode get_number(int* i, char* source) {
 	return tmp;
 }
 
-//Возращает 1, если op1 приоритетнее или такой же приоритетности как op2, иначе - 0
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1, пїЅпїЅпїЅпїЅ op1 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ op2, пїЅпїЅпїЅпїЅпїЅ - 0
 int priority(int op1, int op2) {
 	if ((op1 == '+' || op1 == '-') && (op2 == '+' || op2 == '-')) {
 		return 1;
@@ -114,7 +120,7 @@ int priority(int op1, int op2) {
 	return 0;
 }
 
-void Transform_to_Polish(Stack *mainStack, char* source) {
+void Transform_to_Polish(Stack* mainStack, char* source) {
 	Stack operators;
 	init_Stack(&operators);
 
@@ -123,7 +129,7 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 
 	for (int i = 0; i < len; ++i) {
 
-		if (source[i] == ' ') continue;
+		if (source[i] == ' ' || source[i] == ',') continue;
 
 		else if (source[i] == '(') {
 			RPNNode newNode;
@@ -145,15 +151,19 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 
 		else if (IS_OPERATOR(source[i])) {
 
-			if ( (source[i] == '-') && (i == 0 || source[i - 1] == '(' || source[i + 1] == '(') || isalpha(source[i + 1]) ) {
-				RPNNode help;
-				help.type = REAL_NUMBER;
-				help.real_number = -1;
-				mainStack->push(mainStack, help);
-				help.type = OPERATOR;
-				help.function = '*';
-				operators.push(&operators, help);
-				continue;
+			if (source[i] == '-') {
+				int j = i;
+				while (source[j - 1] == ' ') --j;
+				if (i == 0 || source[j] == '(') {
+					RPNNode help;
+					help.type = REAL_NUMBER;
+					help.real_number = -1;
+					mainStack->push(mainStack, help);
+					help.type = OPERATOR;
+					help.function = '*';
+					operators.push(&operators, help);
+					continue;
+				}
 			}
 			while (!operators.empty(operators) && operators.top(operators).type == OPERATOR && priority(operators.top(operators).function, source[i])) {
 				mainStack->push(mainStack, operators.pop(&operators));
@@ -168,7 +178,7 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 			mainStack->push(mainStack, get_number(&i, source));
 		}
 
-		else  {
+		else {
 			RPNNode newNode;
 			newNode.type = FUNCTION;
 			newNode.function = get_func_type(source, &i);
@@ -183,11 +193,10 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 
 int main() {
 	Stack mainStack;
-	
+
 	init_Stack(&mainStack);
 
-	char *s = "(-tg(log(2)+3/2)^2)   -      (5 + 2j)";
-	//-1 2 log 3 2 / + tg * 2 ^
+	char* s = "(2+ pow( log(3),  2 )) *5";
 
 	Transform_to_Polish(&mainStack, s);
 
