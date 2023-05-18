@@ -36,7 +36,7 @@ RPNNode* solveRPN(Stack* rpn) {
 	while(rpn->size) {
 		RPNNode next = rpn->pop(rpn);
 		if (next.type == REAL_NUMBER || next.type == COMPLEX_NUMBER) {
-			calcRpn->push(calcRpn, &next);
+			calcRpn->push(calcRpn, next);
 		}
 		else {
 			calc(calcRpn, next);
@@ -115,7 +115,7 @@ void calc(Stack* calcRpn, RPNNode func) {
 		}
 	}
 
-	push_Stack(calcRpn, result);
+	push_Stack(calcRpn, *result);
 }
 
 RPNNode* sum(RPNNode* oper1, RPNNode* oper2) {

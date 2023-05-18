@@ -4,8 +4,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "Constants.h"
-#define EMPTY 1
-#define FULL 0
 
 typedef struct RPNNode {
 	int type;
@@ -17,14 +15,14 @@ typedef struct RPNNode {
 }RPNNode;
 
 typedef struct stackList {
-	RPNNode* node;
+	RPNNode node;
 	struct stackList* next;
 } stackList;
 
 typedef struct Stack {
 	stackList* head;
 	int size;
-	void (*push)(struct Stack* stack, RPNNode* node);
+	void (*push)(struct Stack* stack, RPNNode node);
 	RPNNode (*pop)(struct Stack* stack);
 	RPNNode(*popHead) (struct Stack* stack);
 	int (*empty)(const struct Stack stack);
@@ -32,7 +30,7 @@ typedef struct Stack {
 	void (*print)(const struct Stack stack);
 } Stack;
 
-void push_Stack(Stack* stack, RPNNode* node) {
+void push_Stack(Stack* stack, RPNNode node) {
 	stackList* newNode = (stackList*)malloc(sizeof(stackList));
 	if (newNode) {
 		newNode->node = node;
@@ -54,7 +52,7 @@ RPNNode pop_Stack(Stack* stack) {
 	RPNNode popped;
 	if (!stack->head->next) {
 		--(stack->size);
-		popped = *stack->head->node;
+		popped = stack->head->node;
 		free(stack->head);
 		stack->head = NULL;
 		return popped;
@@ -65,7 +63,7 @@ RPNNode pop_Stack(Stack* stack) {
 		prev = next;
 		next = next->next;
 	}
-	popped = *next->node;
+	popped = next->node;
 	prev->next = NULL;
 	free(next);
 	--(stack->size);
@@ -76,14 +74,14 @@ RPNNode pop_head_Stack(Stack* stack) {
 	if (!stack->head) return;
 	RPNNode popped;
 	if (!stack->head->next) {
-		popped = *stack->head->node;
+		popped = stack->head->node;
 		free(stack->head);
 		stack->head = NULL;
 		--(stack->size);
 		return popped;
 	}
 	stackList* head = stack->head;
-	popped = *head->node;
+	popped = head->node;
 	stack->head = head->next;
 	free(head);
 	--(stack->size);
@@ -94,15 +92,24 @@ RPNNode top_Stack(const Stack stack) {
 	if (!stack.head) return;
 	stackList* iter = stack.head;
 	while (iter->next) iter = iter->next;
-	return *iter->node;
+	return iter->node;
 }
 
 void print_Stack(const Stack stack) {
 	printf("Stack: ");
 	stackList* iter = stack.head;
 	while (iter) {
-		if (iter->node->type == REAL_NUMBER) {
-			printf("%lf ", iter->node->real_number);
+		if (iter->node.type == REAL_NUMBER) {
+			printf("%lf ", iter->node.real_number);
+		} 
+		else if (iter->node.type == COMPLEX_NUMBER) {
+			printf("%lfj ", iter->node.complex_number._Val[1]);
+		}
+		else if (iter->node.type == OPERATOR) {
+			printf("%c ", iter->node.function);
+		}
+		else if (iter->node.type == FUNCTION) {
+			printf("%d ", iter->node.function);
 		}
 		iter = iter->next;
 	}
@@ -110,7 +117,7 @@ void print_Stack(const Stack stack) {
 }
 
 int empty_Stack(const Stack stack) {
-	return stack.size > 0 ? FULL : EMPTY;
+	return stack.size > 0 ? 0 : 1;
 }
 
 void init_Stack(Stack* stack) {
