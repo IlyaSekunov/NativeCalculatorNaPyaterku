@@ -199,10 +199,12 @@ int main() {
 
 	RPNNode res = solveRPN(&mainStack);
 
+	printf("Result:\n");
 	if (res.type == REAL_NUMBER) {
 		printf("%f", res.real_number);
-	} else {
-		printf("%f", cimagl(res.complex_number));
+	}
+	else {
+		printf("%f + (%f)j", creall(res.complex_number), cimagl(res.complex_number));
 	}
 	//printf("%d", mainStack.size);
 }

@@ -15,17 +15,17 @@
 #define LOG 8
 #define LN 9
 #define SQRT 10
-#define POW 11
+#define POW '^'
 #define ABS 12
 #define EXP 13
 #define REAL 14
 #define IMAG 15
 #define MAG 16
 #define PHASE 17
-#define PLUS 18
-#define MINUS 19
-#define MULT 20
-#define DIV 21
+#define PLUS '+'
+#define MINUS '-'
+#define MULT '*'
+#define DIV '/'
 
 #define IS_FUNCTION(x) ((x) >= SIN && (x) <= PHASE)
 
