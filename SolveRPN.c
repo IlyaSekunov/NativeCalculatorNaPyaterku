@@ -1,9 +1,9 @@
-//#include "Constants.h"
+#include "Constants.h"
 #include "Stack.h"
-//#include <stdio.h>
-//#include <stdlib.h>
+#include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
-//#include <complex.h>
+#include <complex.h>
 
 RPNNode solveRPN(Stack*);
 
@@ -29,10 +29,6 @@ RPNNode* realRpn(RPNNode*);
 RPNNode* imagRpn(RPNNode*);
 RPNNode* magRpn(RPNNode*);
 RPNNode* phaseRpn(RPNNode*);
-
-int main() {
-	return 0;
-}
 
 RPNNode solveRPN(Stack* rpn) {
 	Stack* calcRpn = malloc(sizeof(Stack));
