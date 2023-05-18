@@ -1,17 +1,19 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <complex.h>
-#include "Constants.h"
+//#include "Constants.h"
 #include "Stack.h"
+//#include <stdio.h>
+//#include <stdlib.h>
+#include <math.h>
+//#include <complex.h>
 
-RPNNode* solveRPN(Stack*);
+RPNNode solveRPN(Stack*);
+
 void calc(Stack*, RPNNode);
+
 
 RPNNode* sum(RPNNode*, RPNNode*);
 RPNNode* sub(RPNNode*, RPNNode*);
 RPNNode* mult(RPNNode*, RPNNode*);
-RPNNode* div(RPNNode*, RPNNode*);
+RPNNode* divRpn(RPNNode*, RPNNode*);
 RPNNode* deg(RPNNode*, RPNNode*);
 
 RPNNode* cosRpn(RPNNode*);
@@ -28,15 +30,18 @@ RPNNode* imagRpn(RPNNode*);
 RPNNode* magRpn(RPNNode*);
 RPNNode* phaseRpn(RPNNode*);
 
+int main() {
+	return 0;
+}
 
-RPNNode* solveRPN(Stack* rpn) {
+RPNNode solveRPN(Stack* rpn) {
 	Stack* calcRpn = malloc(sizeof(Stack));
 	init_Stack(calcRpn);
 
 	while(rpn->size) {
-		RPNNode next = rpn->pop(rpn);
+		RPNNode next = pop_head_Stack(rpn);
 		if (next.type == REAL_NUMBER || next.type == COMPLEX_NUMBER) {
-			calcRpn->push(calcRpn, next);
+			push_Stack(calcRpn, next);
 		}
 		else {
 			calc(calcRpn, next);
@@ -44,12 +49,12 @@ RPNNode* solveRPN(Stack* rpn) {
 	}
 
 	RPNNode result = pop_Stack(calcRpn);
-	return &result;
+	return result;
 }
 
 void calc(Stack* calcRpn, RPNNode func) {
 	RPNNode oper2 = pop_Stack(calcRpn);
-	RPNNode* result;
+	RPNNode* result = calloc(1, sizeof(RPNNode));
 
 	if (func.type == FUNCTION) {
 		switch (func.type) {
@@ -107,7 +112,7 @@ void calc(Stack* calcRpn, RPNNode func) {
 			result = mult(&oper1, &oper2);
 			break;
 		case DIV:
-			result = div(&oper1, &oper2);
+			result = divRpn(&oper1, &oper2);
 			break;
 		case POW:
 			result = deg(&oper1, &oper2);
@@ -199,7 +204,7 @@ RPNNode* mult(RPNNode* oper1, RPNNode* oper2) {
 	}
 }
 
-RPNNode* div(RPNNode* oper1, RPNNode* oper2) {
+RPNNode* divRpn(RPNNode* oper1, RPNNode* oper2) {
 	if (oper1->type == REAL_NUMBER) {
 		if (oper2->type == REAL_NUMBER) {
 			long double div = oper1->real_number / oper2->real_number;
@@ -354,7 +359,7 @@ RPNNode* sqrtRpn(RPNNode* oper) {
 
 RPNNode* absRpn(RPNNode* oper) {
 	if (oper->type == REAL_NUMBER) {
-		long double rslt = abs(oper->real_number);
+		long double rslt = fabs(oper->real_number);
 		RPNNode res = { REAL_NUMBER, rslt };
 		return &res;
 	}
