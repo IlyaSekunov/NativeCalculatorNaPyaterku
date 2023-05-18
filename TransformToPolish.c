@@ -34,7 +34,7 @@ int get_func_type(char *source, int *i) {
 	}
 	else if (source[*i] == 'l') {
 		if (source[++(*i)] == 'o') {
-			(*i) += 1;
+			++(*i);
 			return LOG;
 		} else {
 			return LN;
@@ -42,7 +42,7 @@ int get_func_type(char *source, int *i) {
 	}
 	else if (source[*i] == 'p') {
 		if (source[++(*i)] == 'o') {
-			(*i) += 1;
+			++(*i);
 			return POW;
 		} else {
 			(*i) += 3;
@@ -145,15 +145,19 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 
 		else if (IS_OPERATOR(source[i])) {
 
-			if ( (source[i] == '-') && (i == 0 || source[i - 1] == '(' || source[i + 1] == '(') || isalpha(source[i + 1]) ) {
-				RPNNode help;
-				help.type = REAL_NUMBER;
-				help.real_number = -1;
-				mainStack->push(mainStack, help);
-				help.type = OPERATOR;
-				help.function = '*';
-				operators.push(&operators, help);
-				continue;
+			if (source[i] == '-') {
+				int j = i;
+				while (source[j - 1] == ' ') --j;
+				if (i == 0 || source[j] == '(') {
+					RPNNode help;
+					help.type = REAL_NUMBER;
+					help.real_number = -1;
+					mainStack->push(mainStack, help);
+					help.type = OPERATOR;
+					help.function = '*';
+					operators.push(&operators, help);
+					continue;
+				}
 			}
 			while (!operators.empty(operators) && operators.top(operators).type == OPERATOR && priority(operators.top(operators).function, source[i])) {
 				mainStack->push(mainStack, operators.pop(&operators));
@@ -186,16 +190,18 @@ int main() {
 	
 	init_Stack(&mainStack);
 
-	char *s = "(-tg(log(2)+3/2)^2)";
+	char *s = "(-tg(log(2)+3/2)^2)-(5 + 2j)";
 
 	Transform_to_Polish(&mainStack, s);
+
+	print(mainStack);
+	return 0;
 
 	RPNNode res = solveRPN(&mainStack);
 
 	if (res.type == REAL_NUMBER) {
 		printf("%f", res.real_number);
-	}
-	else {
+	} else {
 		printf("%f", cimagl(res.complex_number));
 	}
 	//printf("%d", mainStack.size);
