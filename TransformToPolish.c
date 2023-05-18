@@ -176,6 +176,7 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 			RPNNode newNode;
 			newNode.type = FUNCTION;
 			newNode.function = get_func_type(source, &i);
+			if (newNode.function == POW) newNode.type = OPERATOR;
 			operators.push(&operators, newNode);
 		}
 	}
