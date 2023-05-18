@@ -123,7 +123,7 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 
 	for (int i = 0; i < len; ++i) {
 
-		if (source[i] == ' ') continue;
+		if (source[i] == ' ' || source[i] == ',') continue;
 
 		else if (source[i] == '(') {
 			RPNNode newNode;
@@ -190,12 +190,9 @@ int main() {
 	
 	init_Stack(&mainStack);
 
-	char *s = "(-tg(log(2)+3/2)^2)-(5 + 2j)";
+	char *s = "(2+ pow( log(3),  2 )) *5";
 
 	Transform_to_Polish(&mainStack, s);
-
-	print(mainStack);
-	return 0;
 
 	RPNNode res = solveRPN(&mainStack);
 
