@@ -224,12 +224,9 @@ int main() {
 
 	init_Stack(&mainStack);
 
-	char *s = "exp(2) + e";
+	char *s = "phase(e)";
 
 	Transform_to_Polish(&mainStack, s);
-
-	print(mainStack);
-	return 0;
 
 	RPNNode res = solveRPN(&mainStack);
 

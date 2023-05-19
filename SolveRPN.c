@@ -391,24 +391,48 @@ RPNNode expRpn(RPNNode* oper) {
 }
 
 RPNNode realRpn(RPNNode* oper) {
-	long double rslt = creall(oper->complex_number);
+	long double rslt;
+	if (oper->type = COMPLEX_NUMBER) {
+		rslt = creall(oper->complex_number);
+	}
+	else {
+		rslt = oper->real_number;
+	}
 	RPNNode res = { REAL_NUMBER, rslt };
 	return res;
 }
 
 RPNNode imagRpn(RPNNode* oper) {
-	long double rslt = cimagl(oper->complex_number);
+	long double rslt;
+	if (oper->type = COMPLEX_NUMBER) {
+		rslt = cimagl(oper->complex_number);
+	}
+	else {
+		rslt = 0;
+	}
 	RPNNode res = { REAL_NUMBER, rslt };
 	return res;
 }
 RPNNode magRpn(RPNNode* oper) {	
-	long double rslt = sqrt(pow(creall(oper->complex_number), 2) + pow(cimagl(oper->complex_number), 2));
+	long double rslt;
+	if (oper->type = COMPLEX_NUMBER) {
+		rslt = cabsl(oper->complex_number);
+	}
+	else {
+		rslt = oper->real_number;
+	}
 	RPNNode res = { REAL_NUMBER, rslt };
 	return res;
 }
 
 RPNNode phaseRpn(RPNNode* oper) {
-	long double rslt = atan(cimagl(oper->complex_number) / creall(oper->complex_number));
+	long double rslt;
+	if (oper->type == COMPLEX_NUMBER) {
+		rslt = atan(cimagl(oper->complex_number) / creall(oper->complex_number));
+	}
+	else {
+		rslt = 0;
+	}
 	RPNNode res = { REAL_NUMBER, rslt };
 	return res;
 }
