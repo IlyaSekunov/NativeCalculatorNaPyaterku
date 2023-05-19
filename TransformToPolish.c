@@ -245,7 +245,7 @@ int main() {
 			printf("%d ", (int)round(creall(res.complex_number)));
 			realNotZero = 1;
 		}
-		else {
+		else if(fabs(creall(res.complex_number) ) > 0.001) {
 			printf("%f ", creall(res.complex_number));
 			realNotZero = 1;
 		}
