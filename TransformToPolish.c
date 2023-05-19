@@ -191,7 +191,7 @@ int main() {
 	
 	init_Stack(&mainStack);
 
-	char *s = "(2+ pow( log(3),  2 )) *5";
+	char *s = "(2+ pow( log(log(sin(1))),  2 )) *5";
 
 	Transform_to_Polish(&mainStack, s);
 
