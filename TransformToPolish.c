@@ -250,18 +250,18 @@ int main() {
 		}
 		else if (real) {
 			if (round(creall(res.complex_number)) < 0.0001) {
-				printf("%.4fj", cimagl(res.complex_number));
+				printf("%fj", cimagl(res.complex_number));
 			}
-			else printf("%d (%l4f)j", (int)round(creall(res.complex_number)), cimagl(res.complex_number));
+			else printf("%d (%lf)j", (int)round(creall(res.complex_number)), cimagl(res.complex_number));
 		}
 		else if (image) {
 			if (round(cimagl(res.complex_number)) < 0.0001) {
-				printf("%4lfj", creall(res.complex_number));
+				printf("%lfj", creall(res.complex_number));
 			}
-			else printf("%4lf + (%d)j", creall(res.complex_number), (int)cimagl(res.complex_number));
+			else printf("%lf + (%d)j", creall(res.complex_number), (int)cimagl(res.complex_number));
 		}
 		else {
-			printf("%4lf + (%4lf)j", creall(res.complex_number), cimagl(res.complex_number));
+			printf("%lf + (%lf)j", creall(res.complex_number), cimagl(res.complex_number));
 		}
 		
 	}
