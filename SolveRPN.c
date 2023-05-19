@@ -214,8 +214,8 @@ RPNNode divRpn(RPNNode* oper1, RPNNode* oper2) {
 			return res;
 		}
 		else {
-			long double resReal = oper1->real_number / cabsl(oper2->complex_number);
-			long double resImag = (oper1->real_number * cimagl(oper2->complex_number)) / cabsl(oper2->complex_number);
+			long double resReal = (oper1->real_number * creall(oper2->complex_number)) / (creall(oper2->complex_number) * creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
+			long double resImag = (oper1->real_number * cimagl(oper2->complex_number)) / (creall(oper2->complex_number) * creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
 			RPNNode res = { COMPLEX_NUMBER, {resReal, -resImag} };
 			return res;
 		}
@@ -228,9 +228,9 @@ RPNNode divRpn(RPNNode* oper1, RPNNode* oper2) {
 			return res;
 		}
 		else {
-			long double resReal = (creall(oper1->complex_number) * creall(oper2->complex_number) + cimagl(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number)*creall(oper2->complex_number) + cimagl(oper2->complex_number)*cimagl(oper2->complex_number));
-			long double resImag = (cimagl(oper1->complex_number) * creall(oper2->complex_number) - creall(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number) * creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
-			RPNNode res = { COMPLEX_NUMBER, {resReal, -resImag}};
+			long double resImag = (creall(oper1->complex_number) * creall(oper2->complex_number) + cimagl(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number)*creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
+			long double resReal = (cimagl(oper1->complex_number) * creall(oper2->complex_number) - creall(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number) * creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
+			RPNNode res = { COMPLEX_NUMBER, {-resReal, -resImag}};
 			return res;
 		}
 	}

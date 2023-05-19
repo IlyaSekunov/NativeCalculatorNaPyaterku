@@ -1,20 +1,23 @@
-#define _CRT_SECURE_NO_WARNINGS
+п»ї#define _CRT_SECURE_NO_WARNINGS
+#define _USE_MATH_DEFINES
 #include "Stack.h"
 #include <complex.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
 #include "Constants.h"
 
 RPNNode solveRPN(Stack* rpn);
 
-int get_func_type(char *source, int *i) {
+int get_func_type(char* source, int* i) {
 	if (source[*i] == 's') {
 		if (source[++(*i)] == 'i') {
 			++(*i);
 			return SIN;
-		} else {
+		}
+		else {
 			(*i) += 2;
 			return SQRT;
 		}
@@ -23,7 +26,8 @@ int get_func_type(char *source, int *i) {
 		if (source[++(*i)] == 'o') {
 			++(*i);
 			return COS;
-		} else {
+		}
+		else {
 			++(*i);
 			return CTG;
 		}
@@ -36,15 +40,15 @@ int get_func_type(char *source, int *i) {
 		if (source[++(*i)] == 'o') {
 			++(*i);
 			return LOG;
-		} else {
-			return LN;
 		}
+		else return LN;
 	}
 	else if (source[*i] == 'p') {
 		if (source[++(*i)] == 'o') {
 			++(*i);
 			return POW;
-		} else {
+		}
+		else {
 			(*i) += 3;
 			return PHASE;
 		}
@@ -82,7 +86,8 @@ RPNNode get_number(int* i, char* source) {
 		}
 		if (dot == 0) {
 			result = result * 10 + source[*i] - '0';
-		} else {
+		}
+		else {
 			result += (source[*i] - '0') / pow(10, exp);
 			++exp;
 		}
@@ -92,7 +97,8 @@ RPNNode get_number(int* i, char* source) {
 		tmp.type = COMPLEX_NUMBER;
 		tmp.complex_number._Val[0] = 0;
 		tmp.complex_number._Val[1] = result;
-	} else {
+	}
+	else {
 		tmp.type = REAL_NUMBER;
 		tmp.real_number = result;
 		--(*i);
@@ -100,7 +106,7 @@ RPNNode get_number(int* i, char* source) {
 	return tmp;
 }
 
-//Возращает 1, если op1 приоритетнее или такой же приоритетности как op2, иначе - 0
+//пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ 1, пїЅпїЅпїЅпїЅ op1 пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅ op2, пїЅпїЅпїЅпїЅпїЅ - 0
 int priority(int op1, int op2) {
 	if ((op1 == '+' || op1 == '-') && (op2 == '+' || op2 == '-')) {
 		return 1;
@@ -114,7 +120,7 @@ int priority(int op1, int op2) {
 	return 0;
 }
 
-void Transform_to_Polish(Stack *mainStack, char* source) {
+void Transform_to_Polish(Stack* mainStack, char* source) {
 	Stack operators;
 	init_Stack(&operators);
 
@@ -123,7 +129,13 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 
 	for (int i = 0; i < len; ++i) {
 
-		if (source[i] == ' ' || source[i] == ',') continue;
+		if (source[i] == ' ') continue;
+
+		else if (source[i] == ',') {
+			while (!operators.empty(operators) && operators.top(operators).function != '(') {
+				mainStack->push(mainStack, operators.pop(&operators));
+			}
+		}
 
 		else if (source[i] == '(') {
 			RPNNode newNode;
@@ -145,19 +157,18 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 
 		else if (IS_OPERATOR(source[i])) {
 
-			if (source[i] == '-') {
-				int j = i;
-				while (source[j - 1] == ' ') --j;
-				if (i == 0 || source[j] == '(') {
-					RPNNode help;
-					help.type = REAL_NUMBER;
-					help.real_number = -1;
-					mainStack->push(mainStack, help);
-					help.type = OPERATOR;
-					help.function = '*';
-					operators.push(&operators, help);
-					continue;
-				}
+			int j = i - 1;
+			while (j > 0 && source[j] == ' ') --j;
+			if (source[i] == '-' && (i == 0 || source[j] == '(')) {
+				printf("*");
+				RPNNode help;
+				help.type = REAL_NUMBER;
+				help.real_number = -1;
+				mainStack->push(mainStack, help);
+				help.type = OPERATOR;
+				help.function = '*';
+				operators.push(&operators, help);
+				continue;
 			}
 			while (!operators.empty(operators) && operators.top(operators).type == OPERATOR && priority(operators.top(operators).function, source[i])) {
 				mainStack->push(mainStack, operators.pop(&operators));
@@ -172,12 +183,34 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 			mainStack->push(mainStack, get_number(&i, source));
 		}
 
-		else  {
+		else if (source[i] == 'j' || source[i] == 'P') {
 			RPNNode newNode;
-			newNode.type = FUNCTION;
-			newNode.function = get_func_type(source, &i);
-			if (newNode.function == POW) newNode.type = OPERATOR;
-			operators.push(&operators, newNode);
+			if (source[i] == 'j') {
+				newNode.type = COMPLEX_NUMBER;
+				newNode.complex_number._Val[0] = 0;
+				newNode.complex_number._Val[1] = 1;
+				mainStack->push(mainStack, newNode);
+			}
+			else if (source[i++] == 'P') {
+				newNode.type = REAL_NUMBER;
+				newNode.real_number = M_PI;
+				mainStack->push(mainStack, newNode);
+			}
+		}
+
+		else {
+			RPNNode newNode;
+			if (source[i] == 'e' && source[i + 1] != 'x') {
+				newNode.type = REAL_NUMBER;
+				newNode.real_number = M_E;
+				mainStack->push(mainStack, newNode);
+			}
+			else {
+				newNode.type = FUNCTION;
+				newNode.function = get_func_type(source, &i);
+				if (newNode.function == POW) newNode.type = OPERATOR;
+				operators.push(&operators, newNode);
+			}
 		}
 	}
 	while (!operators.empty(operators)) {
@@ -188,21 +221,50 @@ void Transform_to_Polish(Stack *mainStack, char* source) {
 
 int main() {
 	Stack mainStack;
-	
+
 	init_Stack(&mainStack);
 
-	char *s = "(2+ pow( log(log(sin(1))),  2 )) *5";
+	char *s = "exp(2) + e";
 
 	Transform_to_Polish(&mainStack, s);
+
+	print(mainStack);
+	return 0;
 
 	RPNNode res = solveRPN(&mainStack);
 
 	printf("Result:\n");
 	if (res.type == REAL_NUMBER) {
-		printf("%f", res.real_number);
+		if (fabs(res.real_number - round(res.real_number)) < 0.0001) printf("%d", (int)res.real_number);
+		else printf("%lf", res.real_number);
 	}
 	else {
-		printf("%f + (%f)j", creall(res.complex_number), cimagl(res.complex_number));
+		int real = fabs(creall(res.complex_number) - round(creall(res.complex_number))) < 0.0001 ? 1 : 0;
+		int image = fabs(cimagl(res.complex_number) - round(cimagl(res.complex_number))) < 0.0001 ? 1 : 0;
+		if (real && image) {
+			if (round(cimagl(res.complex_number)) < 0.0001) {
+				printf("%d", (int)round(creall(res.complex_number)));
+			}
+			else if (round(creall(res.complex_number)) < 0.0001) {
+				printf("%dj", (int)round(cimagl(res.complex_number)));
+			}
+			else printf("%d (%d)j", (int)round(creall(res.complex_number)), (int)round(cimagl(res.complex_number)));
+		}
+		else if (real) {
+			if (round(creall(res.complex_number)) < 0.0001) {
+				printf("%fj", cimagl(res.complex_number));
+			}
+			else printf("%d (%lf)j", (int)round(creall(res.complex_number)), cimagl(res.complex_number));
+		}
+		else if (image) {
+			if (round(cimagl(res.complex_number)) < 0.0001) {
+				printf("%lfj", creall(res.complex_number));
+			}
+			else printf("%lf + (%d)j", creall(res.complex_number), (int)cimagl(res.complex_number));
+		}
+		else {
+			printf("%lf + (%lf)j", creall(res.complex_number), cimagl(res.complex_number));
+		}
+		
 	}
-	//printf("%d", mainStack.size);
 }
