@@ -79,7 +79,7 @@ int get_func_type(char* source, int* i) {
 RPNNode get_number(int* i, char* source) {
 	long double result = 0;
 	int dot = 0, exp = 1, len = strlen(source);
-	for (; (source[*i] >= '0' && source[*i] <= '9' || source[*i] == '.' || source[*i] == ',') && *i < len; ++(*i)) {
+	for (; (source[*i] >= '0' && source[*i] <= '9' || source[*i] == '.') && *i < len; ++(*i)) {
 		if (source[*i] == '.' || source[*i] == ',') {
 			dot = 1;
 			continue;
@@ -160,7 +160,6 @@ void Transform_to_Polish(Stack* mainStack, char* source) {
 			int j = i - 1;
 			while (j > 0 && source[j] == ' ') --j;
 			if (source[i] == '-' && (i == 0 || source[j] == '(')) {
-				printf("*");
 				RPNNode help;
 				help.type = REAL_NUMBER;
 				help.real_number = -1;
@@ -224,12 +223,9 @@ int main() {
 
 	init_Stack(&mainStack);
 
-	char *s = "exp(2) + e";
+	char *s = "pow(2,2)";
 
 	Transform_to_Polish(&mainStack, s);
-
-	print(mainStack);
-	return 0;
 
 	RPNNode res = solveRPN(&mainStack);
 
