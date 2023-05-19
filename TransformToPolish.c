@@ -4,6 +4,7 @@
 #include <complex.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
 #include "Constants.h"
@@ -221,7 +222,8 @@ int main() {
 
 	init_Stack(&mainStack);
 
-	char* s = "5,6 + 2j - 1.1j";
+	char* s = calloc(100, sizeof(char));
+	scanf("%s", s);
 
 	Transform_to_Polish(&mainStack, s);
 
@@ -241,22 +243,25 @@ int main() {
 			if (round(cimagl(res.complex_number)) < 0.0001) {
 				printf("%d", (int)round(creall(res.complex_number)));
 			}
+			else if (round(creall(res.complex_number)) < 0.0001) {
+				printf("%dj", (int)round(cimagl(res.complex_number)));
+			}
 			else printf("%d (%d)j", (int)round(creall(res.complex_number)), (int)round(cimagl(res.complex_number)));
 		}
 		else if (real) {
-			if (round(cimagl(res.complex_number)) < 0.0001) {
-				printf("%d", (int)round(creall(res.complex_number)));
+			if (round(creall(res.complex_number)) < 0.0001) {
+				printf("%.4fj", cimagl(res.complex_number));
 			}
-			else printf("%d (%lf)j", (int)round(creall(res.complex_number)), cimagl(res.complex_number));
+			else printf("%d (%l4f)j", (int)round(creall(res.complex_number)), cimagl(res.complex_number));
 		}
 		else if (image) {
-			if (round(creall(res.complex_number)) < 0.0001) {
-				printf("%dj", (int)round(cimagl(res.complex_number)));
+			if (round(cimagl(res.complex_number)) < 0.0001) {
+				printf("%4lfj", creall(res.complex_number));
 			}
-			else printf("%lf + (%d)j", creall(res.complex_number), (int)cimagl(res.complex_number));
+			else printf("%4lf + (%d)j", creall(res.complex_number), (int)cimagl(res.complex_number));
 		}
 		else {
-			printf("%lf + (%lf)j", creall(res.complex_number), cimagl(res.complex_number));
+			printf("%4lf + (%4lf)j", creall(res.complex_number), cimagl(res.complex_number));
 		}
 		
 	}
