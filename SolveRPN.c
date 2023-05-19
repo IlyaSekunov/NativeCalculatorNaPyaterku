@@ -159,7 +159,7 @@ RPNNode sub(RPNNode* oper1, RPNNode* oper2) {
 		else {
 			long double resReal = oper1->real_number - creall(oper2->complex_number);
 			long double resImag = cimagl(oper2->complex_number);
-			RPNNode res = { COMPLEX_NUMBER, {resReal, resImag} };
+			RPNNode res = { COMPLEX_NUMBER, {resReal, -resImag} };
 			return res;
 		}
 	}
@@ -228,9 +228,9 @@ RPNNode divRpn(RPNNode* oper1, RPNNode* oper2) {
 			return res;
 		}
 		else {
-			long double resImag = (creall(oper1->complex_number) * creall(oper2->complex_number) + cimagl(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number)*creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
-			long double resReal = (cimagl(oper1->complex_number) * creall(oper2->complex_number) - creall(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number) * creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
-			RPNNode res = { COMPLEX_NUMBER, {-resReal, -resImag}};
+			long double resReal = (creall(oper1->complex_number) * creall(oper2->complex_number) + cimagl(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number) * creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
+			long double resImag = (cimagl(oper1->complex_number) * creall(oper2->complex_number) - creall(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number) * creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
+			RPNNode res = { COMPLEX_NUMBER, {resReal, resImag}};
 			return res;
 		}
 	}
@@ -391,24 +391,49 @@ RPNNode expRpn(RPNNode* oper) {
 }
 
 RPNNode realRpn(RPNNode* oper) {
-	long double rslt = creall(oper->complex_number);
+	long double rslt;
+	if (oper->type = COMPLEX_NUMBER) {
+		rslt = creall(oper->complex_number);
+	}
+	else {
+		rslt = oper->real_number;
+	}
 	RPNNode res = { REAL_NUMBER, rslt };
 	return res;
 }
 
 RPNNode imagRpn(RPNNode* oper) {
-	long double rslt = cimagl(oper->complex_number);
+	long double rslt;
+	if (oper->type = COMPLEX_NUMBER) {
+		rslt = cimagl(oper->complex_number);
+	}
+	else {
+		rslt = 0;
+	}
 	RPNNode res = { REAL_NUMBER, rslt };
 	return res;
 }
+
 RPNNode magRpn(RPNNode* oper) {	
-	long double rslt = sqrt(pow(creall(oper->complex_number), 2) + pow(cimagl(oper->complex_number), 2));
+	long double rslt;
+	if (oper->type = COMPLEX_NUMBER) {
+		rslt = cabsl(oper->complex_number);
+	}
+	else {
+		rslt = oper->real_number;
+	}
 	RPNNode res = { REAL_NUMBER, rslt };
 	return res;
 }
 
 RPNNode phaseRpn(RPNNode* oper) {
-	long double rslt = atan(cimagl(oper->complex_number) / creall(oper->complex_number));
+	long double rslt;
+	if (oper->type == COMPLEX_NUMBER) {
+		rslt = atan(cimagl(oper->complex_number) / creall(oper->complex_number));
+	}
+	else {
+		rslt = 0;
+	}
 	RPNNode res = { REAL_NUMBER, rslt };
 	return res;
 }

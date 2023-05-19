@@ -223,10 +223,17 @@ int main() {
 
 	init_Stack(&mainStack);
 
+<<<<<<< HEAD
 	char *s = "pow(2,2)";
 
 	Transform_to_Polish(&mainStack, s);
 
+=======
+	char* s = "tg((2+j)/(2-j))";
+
+	Transform_to_Polish(&mainStack, s);
+	print(mainStack);
+>>>>>>> 3d5144b4603841fbc7884ba2ec40f200dc94660e
 	RPNNode res = solveRPN(&mainStack);
 
 	printf("Result:\n");
@@ -244,13 +251,13 @@ int main() {
 			else if (round(creall(res.complex_number)) < 0.0001) {
 				printf("%dj", (int)round(cimagl(res.complex_number)));
 			}
-			else printf("%d (%d)j", (int)round(creall(res.complex_number)), (int)round(cimagl(res.complex_number)));
+			else printf("%d + (%d)j", (int)round(creall(res.complex_number)), (int)round(cimagl(res.complex_number)));
 		}
 		else if (real) {
 			if (round(creall(res.complex_number)) < 0.0001) {
 				printf("%fj", cimagl(res.complex_number));
 			}
-			else printf("%d (%lf)j", (int)round(creall(res.complex_number)), cimagl(res.complex_number));
+			else printf("%d + (%lf)j", (int)round(creall(res.complex_number)), cimagl(res.complex_number));
 		}
 		else if (image) {
 			if (round(cimagl(res.complex_number)) < 0.0001) {
