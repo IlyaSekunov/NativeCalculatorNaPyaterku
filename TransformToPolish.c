@@ -223,7 +223,7 @@ int main() {
 
 	init_Stack(&mainStack);
 
-	char *s = "2.1 - 2j + 3j";
+	char *s = "1^2*j";
 
 	Transform_to_Polish(&mainStack, s);
 
