@@ -223,7 +223,7 @@ int main() {
 
 	init_Stack(&mainStack);
 
-	char *s = "1^2*j";
+	char* s = "-1^(-2";
 
 	Transform_to_Polish(&mainStack, s);
 
@@ -231,12 +231,12 @@ int main() {
 
 	printf("Result:\n");
 	if (res.type == REAL_NUMBER) {
-		if (fabs(res.real_number - round(res.real_number)) < 0.0001) printf("%d", (int)res.real_number);
+		if (fabs(res.real_number - round(res.real_number)) < 0.00000001) printf("%d", (int)res.real_number);
 		else printf("%lf", res.real_number);
 	}
 	else {
-		int real = fabs(creall(res.complex_number) - round(creall(res.complex_number))) < 0.0001 ? 1 : 0;
-		int image = fabs(cimagl(res.complex_number) - round(cimagl(res.complex_number))) < 0.0001 ? 1 : 0;
+		int real = fabs(creall(res.complex_number) - round(creall(res.complex_number))) < 0.00000001 ? 1 : 0;
+		int image = fabs(cimagl(res.complex_number) - round(cimagl(res.complex_number))) < 0.00000001 ? 1 : 0;
 
 		int realNotZero = 0;
 		int imagNotZero = 0;
@@ -245,12 +245,12 @@ int main() {
 			printf("%d ", (int)round(creall(res.complex_number)));
 			realNotZero = 1;
 		}
-		else if(fabs(creall(res.complex_number) ) > 0.001) {
+		else if(fabs(creall(res.complex_number) ) > 0.00000001) {
 			printf("%f ", creall(res.complex_number));
 			realNotZero = 1;
 		}
 
-		if (realNotZero && (int)round(cimagl(res.complex_number)) != 0) {
+		if (realNotZero && fabs(cimagl(res.complex_number)) > 0.00000001) {
 			if (cimagl(res.complex_number) > 0) {
 				printf("+ ");
 			}
@@ -260,7 +260,7 @@ int main() {
 
 			imagNotZero = 1;
 		}
-		else if ((int)round(cimagl(res.complex_number)) != 0) {
+		else if (fabs(cimagl(res.complex_number)) > 0.00000001) {
 			if (cimagl(res.complex_number) < 0) {
 				printf("-");
 			}
@@ -280,4 +280,5 @@ int main() {
 			}
 		}
 	}
+	if (fabs(cimagl(res.complex_number)) < 0.00000001 && fabs(creall(res.complex_number)) < 0.00000001) printf("0");
 }
