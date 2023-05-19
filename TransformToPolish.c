@@ -223,7 +223,7 @@ int main() {
 
 	init_Stack(&mainStack);
 
-	char *s = "2 + 2j - 2j";
+	char *s = "2.1 - 2j + 3j";
 
 	Transform_to_Polish(&mainStack, s);
 
@@ -237,54 +237,46 @@ int main() {
 	else {
 		int real = fabs(creall(res.complex_number) - round(creall(res.complex_number))) < 0.0001 ? 1 : 0;
 		int image = fabs(cimagl(res.complex_number) - round(cimagl(res.complex_number))) < 0.0001 ? 1 : 0;
-		if (real && image) {
-			if (round(cimagl(res.complex_number)) < 0.0001) {
-				printf("%d", (int)round(creall(res.complex_number)));
-			}
-			else if (round(creall(res.complex_number)) < 0.0001) {
-				printf("%dj", (int)round(cimagl(res.complex_number)));
-			}
-			else {
-				if (cimagl(res.complex_number) < 0) {
-					printf("%d - %dj", (int)round(creall(res.complex_number)), (int)round(cimagl(res.complex_number)));
-				}
-				else {
-					printf("%d + %dj", (int)round(creall(res.complex_number)), (int)round(cimagl(res.complex_number)));
-				}
-			}
-		}
-		else if (real) {
-			if (round(creall(res.complex_number)) < 0.0001) {
-				printf("%fj", cimagl(res.complex_number));
-			}
-			else {
-				if (cimagl(res.complex_number) < 0) {
-					printf("%d - %lfj", (int)round(creall(res.complex_number)), cimagl(res.complex_number));
-				}
-				else {
-					printf("%d + %lfj", (int)round(creall(res.complex_number)), cimagl(res.complex_number));
-				}
-			}
-		}
-		else if (image) {
-			if (round(cimagl(res.complex_number)) < 0.0001) {
-				printf("%lfj", creall(res.complex_number));
-			}
-			else {
-				if (cimagl(res.complex_number) < 0) {
-					printf("%lf - %dj", creall(res.complex_number), (int)cimagl(res.complex_number));
-				}
-				else {
-					printf("%lf + %dj", creall(res.complex_number), (int)cimagl(res.complex_number));
-				}
-			}
+
+		int realNotZero = 0;
+		int imagNotZero = 0;
+
+		if (real && (int)round(creall(res.complex_number)) != 0) {
+			printf("%d ", (int)round(creall(res.complex_number)));
+			realNotZero = 1;
 		}
 		else {
-			if (cimagl(res.complex_number) < 0) {
-				printf("%lf - %lfj", creall(res.complex_number), cimagl(res.complex_number));
+			printf("%f ", creall(res.complex_number));
+			realNotZero = 1;
+		}
+
+		if (realNotZero && (int)round(cimagl(res.complex_number)) != 0) {
+			if (cimagl(res.complex_number) > 0) {
+				printf("+ ");
 			}
 			else {
-				printf("%lf + %lfj", creall(res.complex_number), cimagl(res.complex_number));
+				printf("- ");
+			}
+
+			imagNotZero = 1;
+		}
+		else if ((int)round(cimagl(res.complex_number)) != 0) {
+			if (cimagl(res.complex_number) < 0) {
+				printf("-");
+			}
+
+			imagNotZero = 1;
+		}
+
+		if (imagNotZero) {
+			if (image && abs((int)round(cimagl(res.complex_number))) != 1) {
+				printf("%dj", abs((int)round(cimagl(res.complex_number))));
+			}
+			else if (!image) {
+				printf("%lfj", fabs(cimagl(res.complex_number)));
+			}
+			else {
+				printf("j");
 			}
 		}
 	}
