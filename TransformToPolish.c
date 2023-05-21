@@ -192,23 +192,23 @@ void Transform_to_Polish(Stack* mainStack, char* source) {
 	//free(source);
 }
 
-int main() {
-	Stack mainStack;
-
-	init_Stack(&mainStack);
-
-	char* s = "(2+ pow( log(3),  2 )) *5";
-
-	Transform_to_Polish(&mainStack, s);
-
-	RPNNode res = solveRPN(&mainStack);
-
-	printf("Result:\n");
-	if (res.type == REAL_NUMBER) {
-		printf("%f", res.real_number);
-	}
-	else {
-		printf("%f + (%f)j", creall(res.complex_number), cimagl(res.complex_number));
-	}
-	//printf("%d", mainStack.size);
-}
+//int main() {
+//	Stack mainStack;
+//
+//	init_Stack(&mainStack);
+//
+//	char* s = "(2+ pow( log(3),  2 )) *5";
+//
+//	Transform_to_Polish(&mainStack, s);
+//
+//	RPNNode res = solveRPN(&mainStack);
+//
+//	printf("Result:\n");
+//	if (res.type == REAL_NUMBER) {
+//		printf("%f", res.real_number);
+//	}
+//	else {
+//		printf("%f + (%f)j", creall(res.complex_number), cimagl(res.complex_number));
+//	}
+//	//printf("%d", mainStack.size);
+//}
