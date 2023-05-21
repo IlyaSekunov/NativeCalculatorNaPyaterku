@@ -16,9 +16,9 @@ int CollectDataV(variable variables[COUNT_VARIABLES]) {
 		int prefixID = 0;
 		int postfixID = 0;
 		gets(stroka);
-	
+
 		int flag = 0;
-		for (int i = 0; stroka[i-1] != '\0'; i++) {
+		for (int i = 0; stroka[i - 1] != '\0'; i++) {
 
 			if (flag == 0 && stroka[i] != ' ') {
 				prefix[prefixID++] = stroka[i];
@@ -39,7 +39,7 @@ int CollectDataV(variable variables[COUNT_VARIABLES]) {
 		strcpy(variables[i].name, prefix);
 		strcpy(variables[i].data, postfix);
 		varLen++;
-	} 
+	}
 	//return lenght of array that contain variables
 }
 //ln((phase(k-c)*(e-d)/e-b^pow(tg(a-e)^c)-d,c*(c-log(e))^e*cos(d/c))
@@ -80,7 +80,7 @@ int StringBuilder(char instring[INPUT_STRING_LEN], variable variables[COUNT_VARI
 		if ((instring[posIN] > 64 && instring[posIN] < 91) || (instring[posIN] > 96 && instring[posIN] < 123)) { //if this is char
 			int var = CheckWord(posIN, instring, variables, varlen);
 			if (var == -1) {
-				for (; (instring[posIN] < 39 || instring[posIN] > 47)&& instring[posIN] != '\0'; posOUT++, posIN++) {
+				for (; (instring[posIN] < 39 || instring[posIN] > 47) && instring[posIN] != '\0'; posOUT++, posIN++) {
 					outstring[posOUT] = instring[posIN];
 				}
 				posIN--;
@@ -101,5 +101,5 @@ int StringBuilder(char instring[INPUT_STRING_LEN], variable variables[COUNT_VARI
 	outstring[posOUT] = ')';
 	posOUT++;
 	return posOUT;
-	
+
 }

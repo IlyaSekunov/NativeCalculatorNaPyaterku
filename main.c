@@ -11,6 +11,8 @@
 
 RPNNode solveRPN(Stack* rpn);
 void Transform_to_Polish(Stack* mainStack, char* source);
+int CollectDataV(variable variables[COUNT_VARIABLES]);
+int StringBuilder(char instring[INPUT_STRING_LEN], variable variables[COUNT_VARIABLES], int varlen, char outstring[OUTPUT_STRING_LEN], int posOUT);
 
 int main() {
 	Stack mainStack;
