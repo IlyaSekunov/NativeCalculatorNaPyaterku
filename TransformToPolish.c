@@ -80,7 +80,7 @@ RPNNode get_number(int* i, char* source) {
 	long double result = 0;
 	int dot = 0, exp = 1, len = strlen(source);
 	for (; (source[*i] >= '0' && source[*i] <= '9' || source[*i] == '.') && *i < len; ++(*i)) {
-		if (source[*i] == '.' || source[*i] == ',') {
+		if (source[*i] == '.') {
 			dot = 1;
 			continue;
 		}
@@ -106,7 +106,6 @@ RPNNode get_number(int* i, char* source) {
 	return tmp;
 }
 
-//��������� 1, ���� op1 ������������ ��� ����� �� �������������� ��� op2, ����� - 0
 int priority(int op1, int op2) {
 	if ((op1 == '+' || op1 == '-') && (op2 == '+' || op2 == '-')) {
 		return 1;
@@ -223,7 +222,7 @@ int main() {
 
 	init_Stack(&mainStack);
 
-	char* s = "-1^(-2";
+	char* s = "";
 
 	Transform_to_Polish(&mainStack, s);
 
