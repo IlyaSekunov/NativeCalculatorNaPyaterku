@@ -78,20 +78,6 @@ void init_Stack(Stack* stack) {
 	stack->push = push_Stack;
 	stack->pop = pop_Stack;
 	stack->top = top_Stack;
-	//stack->print = print_Stack;
 	stack->empty = empty_Stack;
 	stack->popHead = pop_head_Stack;
-}
-
-void print(Stack stack) {
-	printf("Stack: ");
-	if (!stack.head) return;
-	while (stack.head) {
-		if (stack.head->node.type == REAL_NUMBER) printf("%lf ", stack.head->node.real_number);
-		else if (stack.head->node.type == COMPLEX_NUMBER) printf("%lfj ", stack.head->node.complex_number._Val[1]);
-		else if (stack.head->node.type == OPERATOR) printf("%c ", stack.head->node.function);
-		else printf("%d ", stack.head->node.function);
-		stack.head = stack.head->next;
-	}
-	printf("\n");
 }

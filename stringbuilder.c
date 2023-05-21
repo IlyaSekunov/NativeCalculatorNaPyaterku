@@ -4,13 +4,12 @@
 #include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
-#include <string.h>
 #include "Constants.h"
-#include "Variable.h"
+
 int CollectDataV(variable variables[COUNT_VARIABLES]) {
 	int varLen = 0;
 	char stroka[10000];
-	for (int i = 0; ; i++) { //collect data
+	for (int i = 0; ; i++) {
 		char prefix[VARIABLES_NAME_LEN];
 		char postfix[VARIABLES_DATA_LEN];
 		int prefixID = 0;
@@ -40,18 +39,9 @@ int CollectDataV(variable variables[COUNT_VARIABLES]) {
 		strcpy(variables[i].data, postfix);
 		varLen++;
 	}
-	//return lenght of array that contain variables
 }
-//ln((phase(k-c)*(e-d)/e-b^pow(tg(a-e)^c)-d,c*(c-log(e))^e*cos(d/c))
-//	a = 1
-//	b = a+1
-//	c = b*(b/b)
-//	d = c/b
-//	e = d*(c-d)^a+b
-//	k = b-e+d*i
-//	finish
+
 char* CheckWord(int nowpos, char instring[INPUT_STRING_LEN], variable variables[COUNT_VARIABLES], int varlen) {
-	//check word
 	char buffer[100];
 	int iterator = 0;
 	for (int i = nowpos; ((instring[i] < 39 || instring[i] > 47) && instring[i] != '^') && instring[i] != '\0'; i++) {
@@ -59,21 +49,16 @@ char* CheckWord(int nowpos, char instring[INPUT_STRING_LEN], variable variables[
 		iterator++;
 	}
 	buffer[iterator] = '\0';
-	//if this array with variables contain this word
 	int checkcode = 0;
 	for (int i = 0; i < varlen; i++) {
 		if (strcmp(variables[i].name, buffer) == 0) {
-			return i; //it return number of variable, else return -1
+			return i; 
 		}
 	}
 	return -1;
-	//printf("%s\n", buffer);
 }
-//int BuildInVariable(variable variable)
 
 int StringBuilder(char instring[INPUT_STRING_LEN], variable variables[COUNT_VARIABLES], int varlen, char outstring[OUTPUT_STRING_LEN], int posOUT) {
-	/*char outstring[OUTPUT_STRING_LEN];
-	int posOUT = 0;*/
 	outstring[posOUT] = '(';
 	posOUT++;
 	for (int posIN = 0; instring[posIN] != '\0'; posIN++) {

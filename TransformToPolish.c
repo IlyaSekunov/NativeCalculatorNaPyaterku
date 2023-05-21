@@ -123,7 +123,6 @@ void Transform_to_Polish(Stack* mainStack, char* source) {
 	Stack operators;
 	init_Stack(&operators);
 
-	printf("Expression:\n%s\n", source);
 	int len = strlen(source);
 
 	for (int i = 0; i < len; ++i) {
@@ -214,6 +213,5 @@ void Transform_to_Polish(Stack* mainStack, char* source) {
 	while (!operators.empty(operators)) {
 		mainStack->push(mainStack, operators.pop(&operators));
 	}
-	//free(source);
 }
 

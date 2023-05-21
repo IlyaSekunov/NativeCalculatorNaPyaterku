@@ -36,5 +36,9 @@
 #define COUNT_VARIABLES 100
 #define INPUT_STRING_LEN 1000
 
+typedef struct variable {
+	char name[VARIABLES_NAME_LEN];
+	char data[VARIABLES_DATA_LEN];
+}variable;
 
 #endif
