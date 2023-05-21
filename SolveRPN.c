@@ -1,9 +1,11 @@
+#define _USE_MATH_DEFINES
 #include "Constants.h"
 #include "Stack.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <complex.h>
+
 
 RPNNode solveRPN(Stack*);
 
@@ -427,13 +429,19 @@ RPNNode magRpn(RPNNode* oper) {
 }
 
 RPNNode phaseRpn(RPNNode* oper) {
-	long double rslt;
-	if (oper->type == COMPLEX_NUMBER) {
-		rslt = atan(cimagl(oper->complex_number) / creall(oper->complex_number));
+	RPNNode rslt = { REAL_NUMBER, 0 };
+	if (oper->type == COMPLEX_NUMBER ) {
+		rslt.real_number = cargl(oper->complex_number);
 	}
 	else {
-		rslt = 0;
+		if (fabs(creall(oper->complex_number)) > 0.00001) {
+			if (creall(oper->complex_number) < 0) {
+				rslt.real_number = M_PI / (-2);
+			}
+			else {
+				rslt.real_number = M_PI / 2;
+			}
+		}
 	}
-	RPNNode res = { REAL_NUMBER, rslt };
-	return res;
+	return rslt;
 }
