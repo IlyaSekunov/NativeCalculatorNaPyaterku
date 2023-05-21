@@ -9,6 +9,7 @@
 #include "Variable.h"
 
 int CollectDataV(variable variables[COUNT_VARIABLES]);
+int StringBuilder(char instring[INPUT_STRING_LEN], variable variables[COUNT_VARIABLES], int varlen, char outstring[OUTPUT_STRING_LEN], int posOUT);
 
 int CollectDataV(variable variables[COUNT_VARIABLES]) {
 	int varLen = 0;
@@ -56,14 +57,14 @@ int StringBuilder(char instring[INPUT_STRING_LEN], variable variables[COUNT_VARI
 		if ((instring[posIN] > 64 && instring[posIN] < 91) || (instring[posIN] > 96 && instring[posIN] < 123)) { //if this is char
 			int var = CheckWord(posIN, instring, variables, varlen);
 			if (var == -1) {
-				for (; (instring[posIN] < 42 || instring[posIN] > 48)&& instring[posIN] != '\0'; posOUT++, posIN++) {
+				for (; (instring[posIN] < 42 || instring[posIN] > 47) && instring[posIN] != '\0'; posOUT++, posIN++) {
 					outstring[posOUT] = instring[posIN];
 				}
 				posIN--;
 			}
 			else {
 				posOUT = StringBuilder(variables[var].data, variables, varlen, outstring, posOUT);
-				while (((instring[posIN] < 42 || instring[posIN] > 48) && instring[posIN] != '^') && instring[posIN] != '\0') {
+				while (((instring[posIN] < 42 || instring[posIN] > 47) && instring[posIN] != '^') && instring[posIN] != '\0') {
 					posIN++;
 				}
 				posIN--;
