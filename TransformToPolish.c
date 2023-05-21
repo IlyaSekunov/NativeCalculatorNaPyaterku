@@ -1,8 +1,10 @@
 ﻿#define _CRT_SECURE_NO_WARNINGS
+#define _USE_MATH_DEFINES
 #include "Stack.h"
 #include <complex.h>
 #include <string.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 #include <ctype.h>
 #include "Constants.h"
@@ -39,9 +41,7 @@ int get_func_type(char* source, int* i) {
 			++(*i);
 			return LOG;
 		}
-		else {
-			return LN;
-		}
+		else return LN;
 	}
 	else if (source[*i] == 'p') {
 		if (source[++(*i)] == 'o') {
@@ -79,7 +79,7 @@ int get_func_type(char* source, int* i) {
 RPNNode get_number(int* i, char* source) {
 	long double result = 0;
 	int dot = 0, exp = 1, len = strlen(source);
-	for (; (source[*i] >= '0' && source[*i] <= '9' || source[*i] == '.' || source[*i] == ',') && *i < len; ++(*i)) {
+	for (; (source[*i] >= '0' && source[*i] <= '9' || source[*i] == '.') && *i < len; ++(*i)) {
 		if (source[*i] == '.' || source[*i] == ',') {
 			dot = 1;
 			continue;
@@ -129,7 +129,13 @@ void Transform_to_Polish(Stack* mainStack, char* source) {
 
 	for (int i = 0; i < len; ++i) {
 
-		if (source[i] == ' ' || source[i] == ',') continue;
+		if (source[i] == ' ') continue;
+
+		else if (source[i] == ',') {
+			while (!operators.empty(operators) && operators.top(operators).function != '(') {
+				mainStack->push(mainStack, operators.pop(&operators));
+			}
+		}
 
 		else if (source[i] == '(') {
 			RPNNode newNode;
@@ -151,19 +157,17 @@ void Transform_to_Polish(Stack* mainStack, char* source) {
 
 		else if (IS_OPERATOR(source[i])) {
 
-			if (source[i] == '-') {
-				int j = i;
-				while (source[j - 1] == ' ') --j;
-				if (i == 0 || source[j] == '(') {
-					RPNNode help;
-					help.type = REAL_NUMBER;
-					help.real_number = -1;
-					mainStack->push(mainStack, help);
-					help.type = OPERATOR;
-					help.function = '*';
-					operators.push(&operators, help);
-					continue;
-				}
+			int j = i - 1;
+			while (j > 0 && source[j] == ' ') --j;
+			if (source[i] == '-' && (i == 0 || source[j] == '(')) {
+				RPNNode help;
+				help.type = REAL_NUMBER;
+				help.real_number = -1;
+				mainStack->push(mainStack, help);
+				help.type = OPERATOR;
+				help.function = '*';
+				operators.push(&operators, help);
+				continue;
 			}
 			while (!operators.empty(operators) && operators.top(operators).type == OPERATOR && priority(operators.top(operators).function, source[i])) {
 				mainStack->push(mainStack, operators.pop(&operators));
@@ -178,12 +182,34 @@ void Transform_to_Polish(Stack* mainStack, char* source) {
 			mainStack->push(mainStack, get_number(&i, source));
 		}
 
+		else if (source[i] == 'j' || source[i] == 'P') {
+			RPNNode newNode;
+			if (source[i] == 'j') {
+				newNode.type = COMPLEX_NUMBER;
+				newNode.complex_number._Val[0] = 0;
+				newNode.complex_number._Val[1] = 1;
+				mainStack->push(mainStack, newNode);
+			}
+			else if (source[i++] == 'P') {
+				newNode.type = REAL_NUMBER;
+				newNode.real_number = M_PI;
+				mainStack->push(mainStack, newNode);
+			}
+		}
+
 		else {
 			RPNNode newNode;
-			newNode.type = FUNCTION;
-			newNode.function = get_func_type(source, &i);
-			if (newNode.function == POW) newNode.type = OPERATOR;
-			operators.push(&operators, newNode);
+			if (source[i] == 'e' && source[i + 1] != 'x') {
+				newNode.type = REAL_NUMBER;
+				newNode.real_number = M_E;
+				mainStack->push(mainStack, newNode);
+			}
+			else {
+				newNode.type = FUNCTION;
+				newNode.function = get_func_type(source, &i);
+				if (newNode.function == POW) newNode.type = OPERATOR;
+				operators.push(&operators, newNode);
+			}
 		}
 	}
 	while (!operators.empty(operators)) {
@@ -192,23 +218,4 @@ void Transform_to_Polish(Stack* mainStack, char* source) {
 	//free(source);
 }
 
-//int main() {
-//	Stack mainStack;
-//
-//	init_Stack(&mainStack);
-//
-//	char* s = "(2+ pow( log(3),  2 )) *5";
-//
-//	Transform_to_Polish(&mainStack, s);
-//
-//	RPNNode res = solveRPN(&mainStack);
-//
-//	printf("Result:\n");
-//	if (res.type == REAL_NUMBER) {
-//		printf("%f", res.real_number);
-//	}
-//	else {
-//		printf("%f + (%f)j", creall(res.complex_number), cimagl(res.complex_number));
-//	}
-//	//printf("%d", mainStack.size);
-//}
+
