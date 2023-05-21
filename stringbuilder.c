@@ -7,6 +7,9 @@
 #include <string.h>
 #include "Constants.h"
 #include "Variable.h"
+
+int CollectDataV(variable variables[COUNT_VARIABLES]);
+
 int CollectDataV(variable variables[COUNT_VARIABLES]) {
 	int varLen = 0;
 	char prefix[VARIABLES_NAME_LEN];
