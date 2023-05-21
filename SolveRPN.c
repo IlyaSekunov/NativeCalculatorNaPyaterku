@@ -1,9 +1,11 @@
+#define _USE_MATH_DEFINES
 #include "Constants.h"
 #include "Stack.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
 #include <complex.h>
+
 
 RPNNode solveRPN(Stack*);
 
@@ -33,7 +35,7 @@ RPNNode solveRPN(Stack* rpn) {
 	Stack* calcRpn = malloc(sizeof(Stack));
 	init_Stack(calcRpn);
 
-	while(rpn->size) {
+	while (rpn->size) {
 		RPNNode next = pop_head_Stack(rpn);
 		if (next.type == REAL_NUMBER || next.type == COMPLEX_NUMBER) {
 			push_Stack(calcRpn, next);
@@ -94,7 +96,7 @@ void calc(Stack* calcRpn, RPNNode func) {
 			break;
 		}
 	}
-	else if(func.type == OPERATOR){
+	else if (func.type == OPERATOR) {
 		RPNNode oper1 = pop_Stack(calcRpn);
 		switch (func.function) {
 		case PLUS:
@@ -123,7 +125,7 @@ RPNNode sum(RPNNode* oper1, RPNNode* oper2) {
 	if (oper1->type == REAL_NUMBER) {
 		if (oper2->type == REAL_NUMBER) {
 			long double rslt = oper1->real_number + oper2->real_number;
-			RPNNode res = { REAL_NUMBER, rslt};
+			RPNNode res = { REAL_NUMBER, rslt };
 			return res;
 		}
 		else {
@@ -183,24 +185,24 @@ RPNNode mult(RPNNode* oper1, RPNNode* oper2) {
 	if (oper1->type == REAL_NUMBER) {
 		if (oper2->type == REAL_NUMBER) {
 			long double rslt = oper1->real_number * oper2->real_number;
-			RPNNode res = { REAL_NUMBER, rslt};
+			RPNNode res = { REAL_NUMBER, rslt };
 			return res;
 		}
 		else {
 			_Lcomplex rslt = _LCmulcr(oper2->complex_number, oper1->real_number);
-			RPNNode res = { COMPLEX_NUMBER, rslt};
+			RPNNode res = { COMPLEX_NUMBER, rslt };
 			return res;
 		}
 	}
 	else {
 		if (oper2->type == REAL_NUMBER) {
 			_Lcomplex rslt = _LCmulcr(oper1->complex_number, oper2->real_number);
-			RPNNode res = { COMPLEX_NUMBER, rslt};
+			RPNNode res = { COMPLEX_NUMBER, rslt };
 			return res;
 		}
 		else {
 			_Lcomplex rslt = _LCmulcc(oper1->complex_number, oper2->complex_number);
-			RPNNode res = { COMPLEX_NUMBER, rslt};
+			RPNNode res = { COMPLEX_NUMBER, rslt };
 			return res;
 		}
 	}
@@ -230,7 +232,7 @@ RPNNode divRpn(RPNNode* oper1, RPNNode* oper2) {
 		else {
 			long double resReal = (creall(oper1->complex_number) * creall(oper2->complex_number) + cimagl(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number) * creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
 			long double resImag = (cimagl(oper1->complex_number) * creall(oper2->complex_number) - creall(oper1->complex_number) * cimagl(oper2->complex_number)) / (creall(oper2->complex_number) * creall(oper2->complex_number) + cimagl(oper2->complex_number) * cimagl(oper2->complex_number));
-			RPNNode res = { COMPLEX_NUMBER, {resReal, resImag}};
+			RPNNode res = { COMPLEX_NUMBER, {resReal, resImag} };
 			return res;
 		}
 	}
@@ -246,7 +248,7 @@ RPNNode deg(RPNNode* oper1, RPNNode* oper2) {
 		else {
 			_Lcomplex op1 = { oper1->real_number, 0 };
 			_Lcomplex deg = cpowl(op1, oper2->complex_number);
-			RPNNode res = { COMPLEX_NUMBER, deg};
+			RPNNode res = { COMPLEX_NUMBER, deg };
 			return res;
 		}
 	}
@@ -384,7 +386,7 @@ RPNNode expRpn(RPNNode* oper) {
 	}
 	else {
 		_Lcomplex rslt = cexpl(oper->complex_number);
-		RPNNode res = { COMPLEX_NUMBER, rslt};
+		RPNNode res = { COMPLEX_NUMBER, rslt };
 		return res;
 	}
 
@@ -414,7 +416,7 @@ RPNNode imagRpn(RPNNode* oper) {
 	return res;
 }
 
-RPNNode magRpn(RPNNode* oper) {	
+RPNNode magRpn(RPNNode* oper) {
 	long double rslt;
 	if (oper->type = COMPLEX_NUMBER) {
 		rslt = cabsl(oper->complex_number);
@@ -427,13 +429,19 @@ RPNNode magRpn(RPNNode* oper) {
 }
 
 RPNNode phaseRpn(RPNNode* oper) {
-	long double rslt;
+	RPNNode rslt = { REAL_NUMBER, 0 };
 	if (oper->type == COMPLEX_NUMBER) {
-		rslt = atan(cimagl(oper->complex_number) / creall(oper->complex_number));
+		rslt.real_number = cargl(oper->complex_number);
 	}
 	else {
-		rslt = 0;
+		if (fabs(creall(oper->complex_number)) > 0.00001) {
+			if (creall(oper->complex_number) < 0) {
+				rslt.real_number = M_PI / (-2);
+			}
+			else {
+				rslt.real_number = M_PI / 2;
+			}
+		}
 	}
-	RPNNode res = { REAL_NUMBER, rslt };
-	return res;
+	return rslt;
 }

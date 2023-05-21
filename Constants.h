@@ -29,4 +29,12 @@
 
 #define IS_FUNCTION(x) ((x) >= SIN && (x) <= PHASE)
 
+#define INPUT_STRING_LEN 1000
+#define OUTPUT_STRING_LEN 10000
+#define VARIABLES_NAME_LEN 100
+#define VARIABLES_DATA_LEN 900
+#define COUNT_VARIABLES 100
+#define INPUT_STRING_LEN 1000
+
+
 #endif
